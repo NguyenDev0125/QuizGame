@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,13 @@ public class MenuPanel : MonoBehaviour
     [SerializeField] Button openCreditPanelBtn;
     [SerializeField] Button closeSettingPanelBtn;
     [SerializeField] Button closeCreditPanelBtn;
+    [SerializeField] Button restartGameBtn;
+    [SerializeField] Button restartGameBtn1;
+
+    [Header("Menu")]
+    [SerializeField] GameObject GameOverMenu;
+    [SerializeField] GameObject GameVictoryMenu;
+    [SerializeField] GameObject QuestionPanel;
 
     [Header("Event raise")]
     [SerializeField] VoidEventChanel OnGameOver;
@@ -38,6 +46,9 @@ public class MenuPanel : MonoBehaviour
         if (closeSettingPanelBtn) closeSettingPanelBtn.onClick.AddListener(OpenSettingPanel);
         if (closeCreditPanelBtn) closeCreditPanelBtn.onClick.AddListener(OpenCreditPanel);
 
+        restartGameBtn?.onClick.AddListener(RestartGame);
+        restartGameBtn1?.onClick.AddListener(RestartGame);
+
         soundSlide.value = GameManager.Instance.SettingManager.SoundVolume;
         musicSlide.value = GameManager.Instance.SettingManager.MusicVolume;
     }
@@ -54,17 +65,24 @@ public class MenuPanel : MonoBehaviour
 
     private void OpenGameOverPanel()
     {
-
+        GameOverMenu.SetActive(true);
+        GameOverMenu.transform.localScale = Vector3.zero;
+        GameOverMenu.transform.DOScale(1f, 1f);
+        QuestionPanel.transform.DOScale(0f, 0.5f);
     }
 
     private void OpenGameVictoryPanel()
     {
+        GameVictoryMenu.transform.localScale = Vector3.zero;
+        GameVictoryMenu.transform.DOScale(1f, 1f);
+        GameVictoryMenu.SetActive(true);
 
+        QuestionPanel.transform.DOScale(0f, 0.5f);
     }
 
     private void OpenTimeOutPanel()
     {
-
+        Debug.Log("Time out");
     }
 
     private void OpenSettingPanel()
@@ -77,6 +95,11 @@ public class MenuPanel : MonoBehaviour
     {
         creditPanel?.SetActive(!creditPanel.activeInHierarchy);
         
+    }
+
+    public void RestartGame()
+    {
+        GameManager.Instance.RestartGame();
     }
 
 

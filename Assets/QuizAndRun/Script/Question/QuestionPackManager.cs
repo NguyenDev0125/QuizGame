@@ -1,51 +1,84 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
+using System.Threading;
 
 public class QuestionPackManager : MonoBehaviour
 {
-    
-    [SerializeField] QuestionPack[] pack;
+    private static QuestionPackManager instance;
+    [SerializeField] List<QuestionPack> listPack;
+    [SerializeField] VoidEventChanel OnListPackLoaded;
+    [SerializeField] QuestionPack packToSave;
 
-    private QuestionPack selectedPack;
+    private int selectedPackIndex = 0;
+    private string path = "QuizGame/Pack/";
 
-    private string path = "QuizGame/Pack/1";
-    private string json;
-    
-    public QuestionPack[] Packs
+    public static QuestionPackManager Instance 
     {
         get
         {
-            if (pack == null)
-            {
-                pack = GetQuestionPacksOnDatabase();
-            }
-            return pack;
+            return instance;
         }
     }
+    private void Awake()
+    {
+        if (instance == null )
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if(instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+    public List<QuestionPack> ListPack
+    {
+        get
+        {
+            if (listPack == null) Debug.Log("List pack is null");
+            return listPack;
+        }
+    }
+
+    public QuestionPack SelectedPack
+    {
+        get
+        {
+            if (listPack.Count == 0) Debug.Log("List pack is null");
+            return listPack[selectedPackIndex];
+        }
+    }
+      
+      
+
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
-        pack = GetQuestionPacksOnDatabase();
+        LoadPack();
+        //SavePack(packToSave);
     }
-
-    private void CreateJsonPack(QuestionPack _pack)
+    private async void LoadPack()
     {
+        Task<List<QuestionPack>> getDataTask = DatabaseManager.Instance.GetAllQuestionPacksFromFirebase(path);
+        listPack = await getDataTask;
+        OnListPackLoaded.Raise();
         
-        
     }
 
-    private QuestionPack[] GetQuestionPacksOnDatabase()
+    private void SavePack(QuestionPack _pack)
     {
-        List<QuestionPack> result = new List<QuestionPack>();
-       // StartCoroutine(DatabaseManager.Instance.GetJsonData(path,GetJson));
-        Debug.Log(json);
-
-        return result.ToArray();
+        DatabaseManager.Instance.SaveQuestionPackToFirebase(path, _pack);
     }
 
-    private void GetJson(string _json)
+    public void SelectPack(int _packIndex)
     {
-        json = _json;
+        if (_packIndex < 0 || _packIndex >= listPack.Count) return;
+        selectedPackIndex = _packIndex;
+        Debug.Log("Selected pack : " + selectedPackIndex);
+        Debug.Log(listPack[selectedPackIndex]);
     }
+
+
+
 }

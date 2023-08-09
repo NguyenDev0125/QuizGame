@@ -5,7 +5,6 @@ public class EnemySpawnner : MonoBehaviour
 {
     [SerializeField] float minSpawnDist,maxSpawnDist;
     [SerializeField] EnemyController[] enemys;
-    [SerializeField] float enemyPosY;
     private Vector3 lastEnemyPos;
 
     public EnemyController SpawnEnemy()
@@ -13,18 +12,19 @@ public class EnemySpawnner : MonoBehaviour
         if (enemys.Length <= 0) return null;
         Vector3 spawnPos = Vector3.zero;
         EnemyController enemyController = null;
-        for (int i = 0; i < enemys.Length; i++)
-        {
-            if (enemys[i] != null)
+
+            if (enemys != null)
             {
                 float dist = UnityEngine.Random.Range(minSpawnDist,maxSpawnDist);
-                spawnPos = new Vector3(lastEnemyPos.x + dist , enemyPosY,0);
+                
                 int rand = UnityEngine.Random.Range(0,enemys.Length);
                 EnemyController enemy = enemys[rand];
+                spawnPos = new Vector3(lastEnemyPos.x + dist, enemy.transform.position.y, 0);
                 enemyController = Instantiate(enemy, spawnPos, Quaternion.identity);
                 lastEnemyPos = spawnPos;
             }
-        }
+
+        
         return enemyController;
     }
 }

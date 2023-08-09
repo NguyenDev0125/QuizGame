@@ -13,6 +13,7 @@ public class SpawnRoadSideObject: MonoBehaviour
         if(player.position.x > lastSpawnPosition.x)
         {
             lastSpawnPosition =  SpawnRoadsideObject();
+            lastSpawnPosition =  SpawnRoadsideObject();
         }
     }
 

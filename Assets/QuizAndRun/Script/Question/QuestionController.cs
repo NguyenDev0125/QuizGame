@@ -23,7 +23,8 @@ public class QuestionController : MonoBehaviour
 
     private void LoadQuestions()
     {
-        questionsNotAnswered = questionPack.QuestionDatas.ToList();
+        Debug.Log(QuestionPackManager.Instance.SelectedPack.packName);
+        questionsNotAnswered = QuestionPackManager.Instance.SelectedPack.questionDatas.ToList();
         Debug.Log($"QuestionManager.LoadQuestion() : {questionsNotAnswered.Count} question loaded");
     }
 

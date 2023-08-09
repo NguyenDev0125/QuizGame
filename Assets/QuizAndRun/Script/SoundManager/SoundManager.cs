@@ -46,7 +46,7 @@ public class SoundManager : MonoBehaviour
     {
         foreach (Sound sound in listSound)
         {
-            Debug.Log(sound.Volume * _volume);
+            
 
             if (sound.Type == SoundType.Sfx)
             {
@@ -60,7 +60,7 @@ public class SoundManager : MonoBehaviour
     {
         foreach (Sound sound in listSound)
         {
-            Debug.Log(sound.Volume * _volume);
+            
             if (sound.Type == SoundType.Music)
             {
                 sound.audioSource.volume = sound.Volume * _volume;

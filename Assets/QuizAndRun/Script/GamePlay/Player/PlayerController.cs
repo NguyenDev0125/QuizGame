@@ -141,14 +141,22 @@ public class PlayerController : Character
     public override void TakeDamage(int _damage)
     {
         base.TakeDamage(_damage);
+        if (currHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_HURT);
+        }
         SoundManager.Instance.Play("Hit");
-        animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_HURT);
+        
     }
     public override void Die()
     {
         OnPlayerDie.Raise();
         animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_DIE);
         SoundManager.Instance.Play("YasuoDeath");
-        Debug.Log(AnimatorTriggerKey.T_PLAYER_DIE);
+        
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -40,6 +41,7 @@ public class GameManager : MonoBehaviour
     public PlayerController PlayerController { get => playerController; }
     public SettingManager SettingManager { get => settingManager;  }
     public MenuPanel MenuSettingPanel { get => menuSettingPanel; }
+    public CameraController CameraController { get => cameraController;  }
     #endregion
 
     [SerializeField] QuestionPanel questionPanel;
@@ -47,9 +49,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] QuestionController questionController;
     [SerializeField] EnemySpawnner enemySpawnner;
     [SerializeField] CombatController combbatController;
-    [SerializeField] QuestionPackManager questionPackManager;
     [SerializeField] MenuPanel menuSettingPanel;
     [SerializeField] SettingManager settingManager;
+    [SerializeField] CameraController cameraController;
 
     [Header("Event raise")]
     [SerializeField] VoidEventChanel OnPlayerMoveComplete;
@@ -72,10 +74,6 @@ public class GameManager : MonoBehaviour
         if (OnPlayerDie) OnPlayerDie.OnEventRaised += PlayerDie;
         if(OnEnemyDie) OnEnemyDie.OnEventRaised += EnemyDie;
         if (OnTimeOut) OnTimeOut.OnEventRaised += TimeOut;
-
-        if (OnGameVictory) OnGameVictory.OnEventRaised += Victory;
-        if (OnGameVictory) OnGameOver.OnEventRaised += GameOver;
-        if (OnGameVictory) OnGameTimeOut.OnEventRaised += TimeOut;
 
     }
     private void StartingGame()
@@ -131,16 +129,26 @@ public class GameManager : MonoBehaviour
     private void Victory()
     {
         Debug.Log("Victory");
+        OnGameVictory.Raise();
     }
 
     private void TimeOut()
     {
         Debug.Log("Timeout");
+        combbatController.SetCombat(playerController, enemyController);
+        combbatController.StartCombat(false);
     }
 
     private void GameOver()
     {
         Debug.Log("GameOver");
+        OnGameOver.Raise();
+        
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
 
 
