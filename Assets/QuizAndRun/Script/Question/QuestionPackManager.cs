@@ -38,7 +38,7 @@ public class QuestionPackManager : MonoBehaviour
     private QuestionPack[] GetQuestionPacksOnDatabase()
     {
         List<QuestionPack> result = new List<QuestionPack>();
-        StartCoroutine(DatabaseManager.Instance.GetJsonData(path,GetJson));
+       // StartCoroutine(DatabaseManager.Instance.GetJsonData(path,GetJson));
         Debug.Log(json);
 
         return result.ToArray();

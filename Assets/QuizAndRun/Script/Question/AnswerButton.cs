@@ -24,11 +24,23 @@ public class AnswerButton : MonoBehaviour
         {
             OnAnswerButtonClick.Raise(isTrueAnswer);
             isButtonClicked = true;
-            SoundManager.Instance.Play(SoundName.MouseClick);
+            SoundManager.Instance.Play("MouseClick");
             
         });
     }
+    
+    public void OnHoverEnter()
+    {
+        GetComponent<RectTransform>().DOScale(1.05f, 0.1f).SetEase(Ease.OutBounce);
+        if (isButtonClicked) return;
+        SoundManager.Instance.Play("MouseHover");
+    }
 
+    public void OnHoverExit()
+    {
+        if(isButtonClicked) return;
+        GetComponent<RectTransform>().DOScale(1f, 0.1f).SetEase(Ease.OutBounce);
+    }
 
     public void SetAnswerButton(string _ABCD, string _answer , bool _isTrueAnswer)
     {
@@ -42,8 +54,7 @@ public class AnswerButton : MonoBehaviour
         answerBtn.interactable = true;
         answerBtn.image.sprite = normalBg;
         isButtonClicked = false;
-        answerBtn.gameObject.SetActive(true);
-        this.GetComponent<RectTransform>().DOScale(1f, 0f);
+        gameObject.SetActive(true);
     }
 
     public void HideButton()
@@ -62,11 +73,11 @@ public class AnswerButton : MonoBehaviour
         {
             if (isButtonClicked)
             {
-                SoundManager.Instance.Play(SoundName.Correct);
+                SoundManager.Instance.Play("Correct");
             }
             else
             {
-                SoundManager.Instance.Play(SoundName.Incorrect);
+                SoundManager.Instance.Play("Incorrect");
             }
             answerBtn.image.sprite = trueBg;
         }
@@ -77,10 +88,7 @@ public class AnswerButton : MonoBehaviour
         }
     }
 
-    public void PlaySoundOnHover()
-    {
-        SoundManager.Instance.Play(SoundName.MouseClick2);
-    }
+
 
     
 

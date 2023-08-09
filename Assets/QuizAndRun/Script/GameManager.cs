@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
     public QuestionPanel QuestionPanel { get => questionPanel; }
     public EnemySpawnner EnemySpawnner { get => enemySpawnner; }
     public PlayerController PlayerController { get => playerController; }
+    public SettingManager SettingManager { get => settingManager;  }
+    public MenuPanel MenuSettingPanel { get => menuSettingPanel; }
     #endregion
 
     [SerializeField] QuestionPanel questionPanel;
@@ -46,12 +48,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] EnemySpawnner enemySpawnner;
     [SerializeField] CombatController combbatController;
     [SerializeField] QuestionPackManager questionPackManager;
+    [SerializeField] MenuPanel menuSettingPanel;
+    [SerializeField] SettingManager settingManager;
 
+    [Header("Event raise")]
     [SerializeField] VoidEventChanel OnPlayerMoveComplete;
     [SerializeField] BoolEventChanel OnAnswerButtonClick;
     [SerializeField] VoidEventChanel OnPlayerDie;
     [SerializeField] VoidEventChanel OnEnemyDie;
     [SerializeField] VoidEventChanel OnTimeOut;
+
+    [Header("Event listener")]
+    [SerializeField] VoidEventChanel OnGameVictory;
+    [SerializeField] VoidEventChanel OnGameOver;
+    [SerializeField] VoidEventChanel OnGameTimeOut;
 
     private EnemyController enemyController;
 
@@ -63,13 +73,17 @@ public class GameManager : MonoBehaviour
         if(OnEnemyDie) OnEnemyDie.OnEventRaised += EnemyDie;
         if (OnTimeOut) OnTimeOut.OnEventRaised += TimeOut;
 
+        if (OnGameVictory) OnGameVictory.OnEventRaised += Victory;
+        if (OnGameVictory) OnGameOver.OnEventRaised += GameOver;
+        if (OnGameVictory) OnGameTimeOut.OnEventRaised += TimeOut;
+
     }
     private void StartingGame()
     {
         
         questionController.Init();
         SpawnEnemy();
-        SoundManager.Instance.Play(SoundName.Background);
+        SoundManager.Instance.PlayMusic("Background" , 5f);
 
 
     }

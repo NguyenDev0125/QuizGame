@@ -43,14 +43,14 @@ public class PlayerController : Character
 
                 rigidbody.velocity = new Vector2(rawDir * playerMoveSpeed, rigidbody.velocity.y);
                 animator.SetBool(AnimatorTriggerKey.B_PLAYER_RUN , true);
-                SoundManager.Instance.Play(SoundName.FootStepGrass);
+                
             }
             else
             {
                 canMove = false;
                 rigidbody.velocity = Vector3.zero;
                 animator.SetBool(AnimatorTriggerKey.B_PLAYER_RUN, false);
-                SoundManager.Instance.Stop(SoundName.FootStepGrass);
+                SoundManager.Instance.Stop("Footstep");
                 OnMoveComplete();
             }
         }
@@ -61,6 +61,7 @@ public class PlayerController : Character
         nextPoint.x = _nextPoint.x;
         delayTimer = delayMove;
         canMove = true;
+        SoundManager.Instance.PlayDelay("Footstep" , delayMove);
     }
 
     private void OnMoveComplete()
@@ -87,24 +88,24 @@ public class PlayerController : Character
             yield return new WaitForSeconds(delayAttack);
             switch (attack)
             {
-                case 1: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_1); SoundManager.Instance.Play(SoundName.YasuoCast1); break;
-                case 2: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_2); SoundManager.Instance.Play(SoundName.YasuoCast2); break;
+                case 1: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_1); SoundManager.Instance.Play("YasuoCast1"); break;
+                case 2: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_2); SoundManager.Instance.Play("YasuoCast2"); break;
                 case 3: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_3);
                     Qcount++;
                     if (Qcount == 3)
                     {
                         Qcount = 0;
-                        SoundManager.Instance.Play(SoundName.YasuoQ3);
+                        SoundManager.Instance.Play("YasuoQ3");
 
                     }
                     else
                     {
-                        SoundManager.Instance.Play(SoundName.YasuoQ2);
+                        SoundManager.Instance.Play("YasuoCast3");
                     }
 
                     break;
-                case 4: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_4); SoundManager.Instance.Play(SoundName.YasuoCast3); break;
-                default: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_1); SoundManager.Instance.Play(SoundName.YasuoCast3); break;
+                case 4: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_4); SoundManager.Instance.Play("YasuoCast3"); break;
+                default: animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_ATTACK_1); SoundManager.Instance.Play("YasuoCast1"); break;
             }
             if (attack >= 4)
             {
@@ -124,7 +125,7 @@ public class PlayerController : Character
 
     private void LastHitAttack()
     {
-        SoundManager.Instance.Play(SoundName.YasuoR);
+        SoundManager.Instance.Play("YasuoR");
         transform.position = currentEnemy.transform.position + new Vector3(0f, 1f, 0f);
         animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_AIR_ATTACK);
     }
@@ -143,7 +144,7 @@ public class PlayerController : Character
     {
         OnPlayerDie.Raise();
         animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_DIE);
-        SoundManager.Instance.Play(SoundName.YasuoDeath);
+        SoundManager.Instance.Play("YasuoDeath");
         Debug.Log(AnimatorTriggerKey.T_PLAYER_DIE);
     }
 }

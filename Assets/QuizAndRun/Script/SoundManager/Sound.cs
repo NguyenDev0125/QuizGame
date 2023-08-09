@@ -1,47 +1,32 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public class Sound 
+
+public class Sound
 {
-    [SerializeField] SoundName soundName; 
+    [SerializeField] string name;
     [SerializeField] AudioClip audioClip;
-    [SerializeField] float volume;
-    [SerializeField] float pitch;
-    [SerializeField] bool isLoop;
-    [SerializeField] float speed = 1f;
+    [Range(0f, 2f)]
+    [SerializeField] float volume = 1f;
+    [Range(0f,2f)]
+    [SerializeField] float pitch = 1f;
+    [SerializeField] bool isLoop = false;
+    [SerializeField] SoundType type;
     public AudioSource audioSource;
-    public string SoundName
-    {
-        get
-        {
-            return soundName.ToString();
-        }
-    }
-    public AudioClip AudioClip { get => audioClip;  }
     public float Volume { get => volume;}
     public float Pitch { get => pitch; }
     public bool IsLoop { get => isLoop;  }
-    public float Speed { get => speed;  }
+    public string Name { get => name;  }
+    public AudioClip AudioClip { get => audioClip;}
+    internal SoundType Type { get => type;}
 }
+
 [Serializable]
-public enum SoundName
+enum SoundType
 {
-    MouseClick,
-    Sword,
-    SwordHit,
-    FootStepGrass,
-    Hurt,
-    Die,
-    Slide,
-    Correct,
-    Incorrect,
-    Background,
-    MouseClick2,
-    YasuoDeath,
-    YasuoQ2,
-    YasuoQ3,
-    YasuoR,
-    YasuoCast1,
-    YasuoCast2,
-    YasuoCast3
+    Sfx,
+    Music
 }
+
+

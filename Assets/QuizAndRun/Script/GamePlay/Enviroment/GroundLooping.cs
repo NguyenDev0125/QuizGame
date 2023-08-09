@@ -16,7 +16,7 @@ public class GroundLooping : MonoBehaviour
         if (listGround != null)
         {
             currentGround = listGround[0];
-            groundSizeX = currentGround.GetComponent<TilemapCollider2D>().bounds.size.x;
+            groundSizeX = currentGround.GetComponent<BoxCollider2D>().bounds.size.x;
         }
     }
 

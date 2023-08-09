@@ -21,19 +21,17 @@ public class QuestionPanel : MonoBehaviour
 
 
     [Header("Animation")]
-    [Space]
-    [SerializeField] RectTransform questionRectTransform;
-    [SerializeField] Vector2 questionPanelPosition;
-    [SerializeField] float questionDurationScale;
-
-    [Space]
+    [SerializeField] CanvasGroup canvas;
+    [SerializeField] RectTransform questionPanel;
     [SerializeField] RectTransform[] listButtonRect;
-    [SerializeField] float delayShowButton;
-    [SerializeField] Ease questionEase;
-    [SerializeField] float answerButtonDuration;
+    [SerializeField] float fadeInDuration;
+    [SerializeField] float fadeOutDuation;
+    [SerializeField] Ease easeInEase;
+    [SerializeField] float buttonFadeDuration;
+    [SerializeField] float delayTimeBetweenTwoBtn;
     [SerializeField] Ease buttonEase;
-    [SerializeField] float duration;
-    [SerializeField] Vector3[] answerPosition;
+
+
 
 
 
@@ -54,12 +52,19 @@ public class QuestionPanel : MonoBehaviour
                 listAnswersBtns[i].SetAnswerButton(ABCD, answer, isTrueAnswer);
             }
         }
+        RefreshPanel();
         this.gameObject.SetActive(true);
-        StartCoroutine(IE_Show());
+        StartCoroutine(IE_FadeIn());
 
     }
 
-
+    private void RefreshPanel()
+    {
+        foreach(AnswerButton answer in listAnswersBtns)
+        {
+            answer.ResetButton();
+        }
+    }
 
     public void LockAllButton()
     {
@@ -69,38 +74,35 @@ public class QuestionPanel : MonoBehaviour
         }
     }
 
-    private IEnumerator IE_Show()
+    private IEnumerator IE_FadeIn()
     {
-        
-        questionRectTransform.localScale = Vector3.zero;
-        foreach(AnswerButton answer in listAnswersBtns)
+        foreach (RectTransform rect in listButtonRect)
         {
-            answer.GetComponent<RectTransform>().localScale = Vector3.zero;
-        }
-        yield return new WaitForSeconds(1f);
-        questionRectTransform.DOScale(1f, questionDurationScale);
-        questionRectTransform.DOAnchorPos(questionPanelPosition,questionDurationScale);
-
-        yield return new WaitForSeconds(delayShowButton);
-
-        for (int i = 0; i < listAnswersBtns.Length; i++)
-        {
-            listAnswersBtns[i].GetComponent<RectTransform>().DOScale(1f, answerButtonDuration);
-            listAnswersBtns[i].ResetButton();
+            rect.transform.localScale = Vector3.zero;
         }
 
-
+        canvas.alpha = 0f;
+        questionPanel.transform.localPosition = new Vector3(0, -1416, 0);
+        questionPanel.DOAnchorPos(Vector3.zero, fadeInDuration);
+        canvas.DOFade(1f, fadeInDuration).SetEase(easeInEase);
+        yield return new WaitForSeconds(fadeOutDuation);
+        foreach(RectTransform rect in listButtonRect)
+        {
+            rect.DOScale(1f, buttonFadeDuration).SetEase(buttonEase);
+            yield return new WaitForSeconds(delayTimeBetweenTwoBtn);
+        }
+        yield return null;
     }
 
-    private IEnumerator IE_Hide()
+    private IEnumerator IE_FadeOut()
     {
-        questionRectTransform.DOScale(0f, questionDurationScale);
-        coolDownPanel.Hide();
-
-        for (int i = 0; i < listAnswersBtns.Length; i++)
+        foreach (RectTransform rect in listButtonRect)
         {
-            listAnswersBtns[i].HideButton();
+            rect.DOScale(0f, buttonFadeDuration).SetEase(buttonEase);
+            yield return new WaitForSeconds(delayTimeBetweenTwoBtn);
         }
+        canvas.DOFade(0f,fadeOutDuation).SetEase(easeInEase);
+
         yield return null;
     }    
 
@@ -122,7 +124,17 @@ public class QuestionPanel : MonoBehaviour
             answer.ShowResult();
         }
         yield return new WaitForSeconds(3f);
-        StartCoroutine(IE_Hide());
+        StartCoroutine(IE_FadeOut());
+    }
+
+    public void OnHoverEnter()
+    {
+        questionPanel.DOScale(1.05f, 0.5f).SetEase(Ease.OutBack);
+    }
+
+    public void OnHoverExit()
+    {
+        questionPanel.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
     }
 
 

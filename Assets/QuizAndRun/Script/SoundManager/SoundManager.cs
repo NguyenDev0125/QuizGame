@@ -1,3 +1,5 @@
+using DG.Tweening;
+using System;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
@@ -19,62 +21,80 @@ public class SoundManager : MonoBehaviour
     }
     private void Awake()
     {
-        foreach(var sound in listSound)
-        {
-            AudioSource source =  gameObject.AddComponent<AudioSource>();
-            source.loop = sound.IsLoop;
-            source.clip = sound.AudioClip;
-            source.volume = sound.Volume;
-            source.pitch = sound.Pitch;
-            sound.audioSource = source;
+        foreach(Sound sound in listSound) 
+        { 
+            AudioSource audioSource = this.gameObject.AddComponent<AudioSource>();
+            audioSource.loop = sound.IsLoop;  
+            audioSource.pitch = sound.Pitch;
+            audioSource.clip = sound.AudioClip;
+            audioSource.playOnAwake = false;
 
+            if (sound.Type == SoundType.Sfx)
+            {
+                audioSource.volume = sound.Volume * GameManager.Instance.SettingManager.SoundVolume;
+            }
+            else
+            {
+                audioSource.volume = sound.Volume * GameManager.Instance.SettingManager.MusicVolume;
+            }
+
+            sound.audioSource = audioSource;
         }
     }
 
     public void SetSoundVolum(float _volume)
     {
-        foreach( var sound in listSound)
+        foreach (Sound sound in listSound)
         {
-            if (sound.SoundName != SoundName.Background.ToString())
+            Debug.Log(sound.Volume * _volume);
+
+            if (sound.Type == SoundType.Sfx)
             {
                 sound.audioSource.volume = sound.Volume * _volume;
             }
+
         }
     }
 
     public void SetMusicVolume(float _volume)
     {
-        foreach (var sound in listSound)
+        foreach (Sound sound in listSound)
         {
-            if(sound.SoundName == SoundName.Background.ToString())
+            Debug.Log(sound.Volume * _volume);
+            if (sound.Type == SoundType.Music)
             {
-                sound.audioSource.volume = sound.Volume *_volume;
+                sound.audioSource.volume = sound.Volume * _volume;
             }
+            
             
         }
     }
-
-    public void Play(SoundName _name)
+    public void Play(string _name)
     {
-        foreach (var sound in listSound)
-        {
-            if(sound.SoundName == _name.ToString())
-            {
-                if (sound.audioSource.isPlaying) return;
-                sound.audioSource.Play();
-            }
-        }
+        Sound sound = Array.Find<Sound>(listSound, sound => sound.Name == _name);
+        if (sound.audioSource == null || sound.audioSource.isPlaying) return;
+        sound.audioSource.Play();
     }
 
-    public void Stop(SoundName _name)
+    public void PlayDelay(string _name , float _delayTime)
     {
-        foreach (var sound in listSound)
-        {
-            if (sound.SoundName == _name.ToString())
-            {
-                sound.audioSource.Stop();
-            }
-        }
+        Sound sound = Array.Find<Sound>(listSound, sound => sound.Name == _name);
+        if (sound.audioSource == null || sound.audioSource.isPlaying) return;
+        sound.audioSource.PlayDelayed(_delayTime);
+    }
+
+    public void PlayMusic(string _name , float _durationFade)
+    {
+        Sound sound = Array.Find<Sound>(listSound, sound => sound.Name == _name);
+        if (sound.audioSource == null || sound.audioSource.isPlaying) return;
+        sound.audioSource.Play();
+    }
+
+    public void Stop(string _name)
+    {
+        AudioSource source = Array.Find<Sound>(listSound, sound => sound.Name == _name).audioSource;
+        if (!source.isPlaying) return;
+        source.Stop();
     }
 
 

@@ -34,7 +34,7 @@ public class EnemyController : Character
         {
             yield return new WaitForSeconds(delayAttack);
             animator.SetTrigger(AnimatorTriggerKey.T_ENEMY_ATTACK);
-            SoundManager.Instance.Play(SoundName.Sword);
+            SoundManager.Instance.Play("Sword");
         }
     }
 
