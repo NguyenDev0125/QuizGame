@@ -17,7 +17,7 @@ public class EnemyController : Character
     public override void TakeDamage(int _damage)
     {
         base.TakeDamage(_damage);
-        
+        SoundManager.Instance.Play("Hit");
         animator.SetTrigger(AnimatorTriggerKey.T_ENEMY_HURT);
     }
     public void StartCombat(PlayerController _enemy)

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -126,7 +127,9 @@ public class PlayerController : Character
     private void LastHitAttack()
     {
         SoundManager.Instance.Play("YasuoR");
-        transform.position = currentEnemy.transform.position + new Vector3(0f, 1f, 0f);
+        transform.DOMove(currentEnemy.transform.position + new Vector3(0f, 3f, 0f), 0.2f).SetEase(Ease.OutBack);
+
+        // transform.position = currentEnemy.transform.position + new Vector3(0f, 3f, 0f);
         animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_AIR_ATTACK);
     }
 
@@ -138,6 +141,7 @@ public class PlayerController : Character
     public override void TakeDamage(int _damage)
     {
         base.TakeDamage(_damage);
+        SoundManager.Instance.Play("Hit");
         animator.SetTrigger(AnimatorTriggerKey.T_PLAYER_HURT);
     }
     public override void Die()

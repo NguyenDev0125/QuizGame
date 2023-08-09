@@ -655,7 +655,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 124258887}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.76, z: 0}
+  m_LocalPosition: {x: 0, y: 5.56, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1121755270}
@@ -1606,7 +1606,7 @@ MonoBehaviour:
     audioSource: {fileID: 0}
   - name: Background
     audioClip: {fileID: 8300000, guid: 6979d52fda0579441a2122b95abaf337, type: 3}
-    volume: 1
+    volume: 0.32
     pitch: 1
     isLoop: 1
     type: 1
@@ -1641,9 +1641,16 @@ MonoBehaviour:
     audioSource: {fileID: 0}
   - name: Footstep
     audioClip: {fileID: 8300000, guid: 5443561ddfb8bbe4b9156943c2ad20ab, type: 3}
-    volume: 1
+    volume: 0.12
     pitch: 1
     isLoop: 1
+    type: 0
+    audioSource: {fileID: 0}
+  - name: Hit
+    audioClip: {fileID: 8300000, guid: 2f101ee1189fa9d49bdb5421c384a516, type: 3}
+    volume: 1
+    pitch: 1
+    isLoop: 0
     type: 0
     audioSource: {fileID: 0}
 --- !u!4 &296507715
