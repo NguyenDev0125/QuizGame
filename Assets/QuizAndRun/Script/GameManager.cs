@@ -23,11 +23,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(this);
-        }
-        else
+        if(instance == null)
         {
             instance = this;
         }
@@ -148,7 +144,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadSceneAsync(0);
     }
 
 

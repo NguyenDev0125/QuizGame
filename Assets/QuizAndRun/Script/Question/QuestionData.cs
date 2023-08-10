@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public class QuestionData
 {
     public string questionContent;
-    public AnswerData[] listAnswer;
-    public int indexTrueAnswer;
+    public string[] listAnswer = new string[4];
+    public int trueAnswerIndex;
     public int LimitedTime;
 
 }

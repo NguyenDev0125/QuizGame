@@ -47,8 +47,8 @@ public class QuestionPanel : MonoBehaviour
             if(questionData != null && questionData.listAnswer[i] != null)
             {
                 string ABCD = Alphabet.GetCharByIndex(i).ToString();
-                string answer = questionData.listAnswer[i]._content;
-                bool isTrueAnswer = questionData.indexTrueAnswer == i;
+                string answer = questionData.listAnswer[i];
+                bool isTrueAnswer = questionData.trueAnswerIndex == i;
                 listAnswersBtns[i].SetAnswerButton(ABCD, answer, isTrueAnswer);
             }
         }

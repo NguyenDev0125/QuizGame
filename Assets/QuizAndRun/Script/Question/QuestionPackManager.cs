@@ -2,14 +2,15 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
+using Newtonsoft.Json;
 
 public class QuestionPackManager : MonoBehaviour
 {
     private static QuestionPackManager instance;
-    [SerializeField] List<QuestionPack> listPack;
+    
     [SerializeField] VoidEventChanel OnListPackLoaded;
-    [SerializeField] QuestionPack packToSave;
 
+    private List<QuestionPack> listPack;
     private int selectedPackIndex = 0;
     private string path = "QuizGame/Pack/";
 
@@ -54,21 +55,28 @@ public class QuestionPackManager : MonoBehaviour
 
     private void Start()
     {
+        
         DontDestroyOnLoad(gameObject);
-        LoadPack();
-        //SavePack(packToSave);
+        LoadPacks();
+        
     }
-    private async void LoadPack()
+    private async void LoadPacks()
     {
-        Task<List<QuestionPack>> getDataTask = DatabaseManager.Instance.GetAllQuestionPacksFromFirebase(path);
-        listPack = await getDataTask;
+        listPack = new List<QuestionPack>();
+        string[] jsonDatas = await DatabaseManager.Instance.GetJsonDatas(path);
+        foreach (string json in jsonDatas)
+        {
+            QuestionPack question = JsonConvert.DeserializeObject<QuestionPack>(json);
+            Debug.Log("Question pack name : " +question.packName);
+            listPack.Add(question);
+        }
         OnListPackLoaded.Raise();
         
     }
 
-    private void SavePack(QuestionPack _pack)
+    public  void SavePack(QuestionPack _pack)
     {
-        DatabaseManager.Instance.SaveQuestionPackToFirebase(path, _pack);
+        DatabaseManager.Instance.SaveJsonData(path, _pack);
     }
 
     public void SelectPack(int _packIndex)

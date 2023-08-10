@@ -4,20 +4,24 @@ using UnityEngine;
 public class EnemyController : Character
 {
     [SerializeField] protected VoidEventChanel OnEnemyDie;
+    [SerializeField] protected EnemyHealthBar enemyHealthBar;
     private void OnEnable()
     {
         currHealth = Random.Range(10, 15);
+        enemyHealthBar.ShowHealthBar(currHealth);
     }
     public override void Die()
     {
         OnEnemyDie.Raise();
         animator.SetTrigger(AnimatorTriggerKey.T_ENEMY_DIE);
+        enemyHealthBar.HideHealthBar();
     }
 
     public override void TakeDamage(int _damage)
     {
         
         base.TakeDamage(_damage);
+        enemyHealthBar.UpdateHealthBar(currHealth);
         if(currHealth <= 0)
         {
             Die();
