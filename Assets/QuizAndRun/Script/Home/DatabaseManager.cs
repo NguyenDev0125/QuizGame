@@ -1,6 +1,7 @@
-using Firebase;
+﻿using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
+using Google.MiniJSON;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -28,85 +29,90 @@ public class DatabaseManager : MonoBehaviour
 
     void Awake()
     {
-        reference = FirebaseDatabase.DefaultInstance.RootReference;
+
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
+        {
+            FirebaseApp app = FirebaseApp.DefaultInstance;
+            reference = FirebaseDatabase.DefaultInstance.RootReference;
+
+        });
 
     }
 
 
-    //public async Task<List<QuestionPack>> GetJsonData(string path)
-    //{
-    //    List<QuestionPack> allQuestions = new List<QuestionPack>();
-
-    //    if (reference == null)
-    //    {
-    //        Debug.LogError("Firebase is not initialized.");
-    //        return allQuestions;
-    //    }
-
-    //    DataSnapshot snapshot = await reference.Child(path).GetValueAsync();
-
-    //    if (snapshot != null && snapshot.Exists)
-    //    {
-    //        foreach (var childSnapshot in snapshot.Children)
-    //        {
-
-    //                string jsonData = childSnapshot.GetValue(false).ToString();
-    //                while(jsonData.Length < 10)
-    //                {
-    //                jsonData = childSnapshot.GetValue(false).ToString();
-    //                }
-    //                QuestionPack question = JsonConvert.DeserializeObject<QuestionPack>(jsonData);
-    //                Debug.Log(question.name + question.packDes);
-    //                Debug.Log(JsonConvert.SerializeObject(question));
-    //                allQuestions.Add(question);
-
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning("No data found at path: " + path);
-    //    }
-
-    //    return allQuestions;
-    //}
-    public async Task<string[]> GetJsonDatas(string path)
+    public void GetData(string _path, Action<string> callback)
     {
-        if (reference == null) return null;
-        string[] result = null;
-        DataSnapshot snapshot = await reference.Child(path).GetValueAsync();
-        if (snapshot != null && snapshot.Exists)
-        {
-            result = new string[snapshot.ChildrenCount];
-            int count = 0;
-            foreach (DataSnapshot child in snapshot.Children)
-            {
-                string jsonData = null;
-                jsonData = child.GetValue(false).ToString();
-                Debug.Log(jsonData);
+        if (reference == null) reference = FirebaseDatabase.DefaultInstance.RootReference;
 
-                result[count] = jsonData;
-                count++;
+        reference.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.LogError("Error getting data from Firebase: " + task.Exception);
+                return;
             }
 
-        }
-        else
-        {
-            Debug.LogWarning("No data found at path: " + path);
-        }
+            DataSnapshot snapshot = task.Result;
+            string result = snapshot.Value.ToString();
+            Debug.Log("Get data = " + result);
 
-        return result;
+            callback(result);
+        });
     }
 
-
-    public async void SaveJsonData(string _path, QuestionPack _pack)
+    public void GetJsonDatas(string _path, Action<string[]> callback)
     {
-        string json = JsonConvert.SerializeObject(_pack);
+        reference = FirebaseDatabase.DefaultInstance.RootReference;
+
+        reference.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.LogError("Error getting data from Firebase: " + task.Exception);
+                return;
+            }
+
+            DataSnapshot snapshot = task.Result;
+
+            List<string> valuesList = new List<string>();
+            if(snapshot.ChildrenCount > 0)
+            {
+                foreach (var childSnapshot in snapshot.Children)
+                {
+                    string value = childSnapshot.Value.ToString();
+                    valuesList.Add(value);
+                }
+            }
+            else
+            {
+                valuesList.Add(snapshot.Value.ToString());
+            }
+
+
+            string[] result = valuesList.ToArray();
+
+            foreach (string value in result)
+            {
+                Debug.Log(value);
+            }
+            callback(result);
+        });
+    }
+
+    public async void SaveJsonData(string _path, string _json)
+    {
         if (reference == null) Debug.Log("Firebase is nit Initialized");
         DateTime date = DateTime.Now;
         string realTime = date.ToString("mm_hh_dd_yyyy");
-        _path += "NguyenDev_QuizGame_Pack" + realTime ;
+        _path += "NguyenDev_QuizGame_Pack" + realTime;
         Debug.Log(_path);
-        await reference.Child(_path).SetValueAsync(json);
+        await reference.Child(_path).SetValueAsync(_json);
 
+    }
+
+    public async void SaveData(string _path, string _data)
+    {
+        if (reference == null) Debug.Log("Firebase is nit Initialized");
+        await reference.Child(_path).SetValueAsync(_data);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
+using System;
 
 public class QuestionPackManager : MonoBehaviour
 {
@@ -60,23 +61,29 @@ public class QuestionPackManager : MonoBehaviour
         LoadPacks();
         
     }
-    private async void LoadPacks()
+    public void LoadPacks()
     {
         listPack = new List<QuestionPack>();
-        string[] jsonDatas = await DatabaseManager.Instance.GetJsonDatas(path);
-        foreach (string json in jsonDatas)
+        DatabaseManager.Instance.GetJsonDatas(path , GetData);
+
+    }
+
+    private void GetData(string[] _result)
+    {
+
+        foreach (string json in _result)
         {
             QuestionPack question = JsonConvert.DeserializeObject<QuestionPack>(json);
-            Debug.Log("Question pack name : " +question.packName);
+            Debug.Log("Question pack name : " + question.packName);
             listPack.Add(question);
         }
         OnListPackLoaded.Raise();
-        
     }
 
-    public  void SavePack(QuestionPack _pack)
+    public void SavePack(QuestionPack _pack)
     {
-        DatabaseManager.Instance.SaveJsonData(path, _pack);
+        string json = JsonConvert.SerializeObject(_pack);
+        DatabaseManager.Instance.SaveJsonData(path, json);
     }
 
     public void SelectPack(int _packIndex)

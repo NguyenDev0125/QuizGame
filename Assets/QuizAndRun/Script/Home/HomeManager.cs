@@ -15,7 +15,7 @@ public class HomeManager : MonoBehaviour
     [SerializeField] Button closeChooseLvPanelBtn;
     [SerializeField] Button closeLvCreaterPanelBtn;
     [SerializeField] Button closeStoryPanelBtn;
-
+    [SerializeField] Text totalPlayTxt;
     [SerializeField] VoidEventChanel OnListPackLoaded;
 
     private void Awake()
@@ -47,13 +47,18 @@ public class HomeManager : MonoBehaviour
     }
     private void DisplayLevel()
     {
-        Debug.Log("Display");
+        
         chooseLvPanel.DisplayLevels(QuestionPackManager.Instance.ListPack.ToArray());
     }
 
     public void StartGame()
     {
         SceneManager.LoadScene("GamePlay");
+    }
+
+    public void SetTotalPlayText(string _text)
+    {
+        totalPlayTxt.text ="Total play : "+ _text;
     }
 
     
