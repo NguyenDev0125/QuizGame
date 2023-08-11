@@ -1,51 +1,99 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
 using Newtonsoft.Json;
+using System;
 
 public class QuestionPackManager : MonoBehaviour
 {
+    private static QuestionPackManager instance;
     
-    [SerializeField] QuestionPack[] pack;
+    [SerializeField] VoidEventChanel OnListPackLoaded;
 
-    private QuestionPack selectedPack;
+    private List<QuestionPack> listPack;
+    private int selectedPackIndex = 0;
+    private string path = "QuizGame/Pack/";
 
-    private string path = "QuizGame/Pack/1";
-    private string json;
-    
-    public QuestionPack[] Packs
+    public static QuestionPackManager Instance 
     {
         get
         {
-            if (pack == null)
-            {
-                pack = GetQuestionPacksOnDatabase();
-            }
-            return pack;
+            return instance;
         }
     }
+    private void Awake()
+    {
+        if (instance == null )
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if(instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+    public List<QuestionPack> ListPack
+    {
+        get
+        {
+            if (listPack == null) Debug.Log("List pack is null");
+            return listPack;
+        }
+    }
+
+    public QuestionPack SelectedPack
+    {
+        get
+        {
+            if (listPack.Count == 0) Debug.Log("List pack is null");
+            return listPack[selectedPackIndex];
+        }
+    }
+      
+      
+
     private void Start()
     {
+        
         DontDestroyOnLoad(gameObject);
-        pack = GetQuestionPacksOnDatabase();
-    }
-
-    private void CreateJsonPack(QuestionPack _pack)
-    {
-        
+        LoadPacks();
         
     }
-
-    private QuestionPack[] GetQuestionPacksOnDatabase()
+    public void LoadPacks()
     {
-        List<QuestionPack> result = new List<QuestionPack>();
-       // StartCoroutine(DatabaseManager.Instance.GetJsonData(path,GetJson));
-        Debug.Log(json);
+        listPack = new List<QuestionPack>();
+        DatabaseManager.Instance.GetJsonDatas(path , GetData);
 
-        return result.ToArray();
     }
 
-    private void GetJson(string _json)
+    private void GetData(string[] _result)
     {
-        json = _json;
+
+        foreach (string json in _result)
+        {
+            QuestionPack question = JsonConvert.DeserializeObject<QuestionPack>(json);
+            Debug.Log("Question pack name : " + question.packName);
+            listPack.Add(question);
+        }
+        OnListPackLoaded.Raise();
     }
+
+    public void SavePack(QuestionPack _pack)
+    {
+        string json = JsonConvert.SerializeObject(_pack);
+        DatabaseManager.Instance.SaveJsonData(path, json);
+    }
+
+    public void SelectPack(int _packIndex)
+    {
+        if (_packIndex < 0 || _packIndex >= listPack.Count) return;
+        selectedPackIndex = _packIndex;
+        Debug.Log("Selected pack : " + selectedPackIndex);
+        Debug.Log(listPack[selectedPackIndex]);
+    }
+
+
+
 }

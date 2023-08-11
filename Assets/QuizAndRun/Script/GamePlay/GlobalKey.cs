@@ -2,7 +2,7 @@ public static class AnimatorTriggerKey
 {
     // ENEMY ANIMATION KEY
     public static readonly string T_ENEMY_HURT = "ENEMY_HURT";
-    public static readonly string T_ENEMY_DIE = "ENEMY_DIE";
+    public static readonly string T_ENEMY_DIE = "ENEMY_DEATH";
     public static readonly string T_ENEMY_ATTACK = "ENEMY_ATTACK";
     // PLAYER ANIMATION KEY
     // B : boolean , T : trigger , F : float

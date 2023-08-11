@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/QuizAndRun/Scenes/HomeMenu.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/QuizAndRun/Scenes/GamePlay.unity
+    guid: 19d750f66d825c34ea84590a1b75040e
   m_configObjects: {}

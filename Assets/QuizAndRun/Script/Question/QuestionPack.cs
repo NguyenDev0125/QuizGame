@@ -1,17 +1,14 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Question Pack" , menuName = "QuestionPack/new Pack")]
-public class QuestionPack : ScriptableObject
+public class QuestionPack
 {
+     public string packName;
+     public string packDes;
+     public List<QuestionData> listQuestion;
+     public int maxAnswerInCorrect;
     
-    [SerializeField] string packName;
-    [SerializeField] string packDes;
-    [SerializeField] QuestionData[] questionDatas;
-    [SerializeField] int maxAnswerInCorrect;
-
-    public string PackName { get => packName; }
-    public QuestionData[] QuestionDatas { get => questionDatas; }
-    public int MaxAnswerInCorrect { get => maxAnswerInCorrect; }
-    public string PackDes { get => packDes;  }
 }
+    
+

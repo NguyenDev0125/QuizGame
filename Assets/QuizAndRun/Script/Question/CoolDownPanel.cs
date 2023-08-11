@@ -9,6 +9,7 @@ public class CoolDownPanel : MonoBehaviour
     [SerializeField] VoidEventChanel OnTimeOut;
     private float timer = 0;
     private bool isCooldown = false;
+    private bool isTimeout = false;
     public void StartCoolDown(float _maxValue)
     {
         timer = _maxValue;
@@ -29,7 +30,12 @@ public class CoolDownPanel : MonoBehaviour
             }
             else
             {
-                OnTimeOut.Raise();
+                if(!isTimeout)
+                {
+                    OnTimeOut.Raise();
+                    isTimeout = true;
+                }
+                
             }
 
         }

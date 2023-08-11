@@ -1,16 +1,13 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public class QuestionData
 {
-    [SerializeField] string questionContent;
-    [SerializeField] AnswerData[] listAnswer;
-    [SerializeField] int indexTrueAnswer;
-    [SerializeField] int LimitedTime;
+    public string questionContent;
+    public string[] listAnswer = new string[4];
+    public int trueAnswerIndex;
+    public int LimitedTime;
 
-    public string QuestionContent { get => questionContent; }
-    public AnswerData[] ListAnswer { get => listAnswer; }
-    public int IndexTrueAnswer { get => indexTrueAnswer; }
-    public int LimitedTime1 { get => LimitedTime; }
 }
 

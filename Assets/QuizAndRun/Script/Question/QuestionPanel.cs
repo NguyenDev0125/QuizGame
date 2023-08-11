@@ -40,15 +40,15 @@ public class QuestionPanel : MonoBehaviour
         questionData = _questionData;
         questionTitleTxt.text = _questionTitle;
         
-        coolDownPanel.StartCoolDown(_questionData.LimitedTime1);
-        questionTxt.text = questionData.QuestionContent;
+        coolDownPanel.StartCoolDown(_questionData.LimitedTime);
+        questionTxt.text = questionData.questionContent;
         for(int i = 0; i <  listAnswersBtns.Length; i++)
         {
-            if(questionData != null && questionData.ListAnswer[i] != null)
+            if(questionData != null && questionData.listAnswer[i] != null)
             {
                 string ABCD = Alphabet.GetCharByIndex(i).ToString();
-                string answer = questionData.ListAnswer[i].Content;
-                bool isTrueAnswer = questionData.IndexTrueAnswer == i;
+                string answer = questionData.listAnswer[i];
+                bool isTrueAnswer = questionData.trueAnswerIndex == i;
                 listAnswersBtns[i].SetAnswerButton(ABCD, answer, isTrueAnswer);
             }
         }
