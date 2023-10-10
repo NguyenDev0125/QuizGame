@@ -8,7 +8,6 @@ public class PlayCounter : MonoBehaviour
     {
         DatabaseManager.Instance.GetJsonDatas(path, GetData);
     }
-
     private void GetData(string[] _data)
     {
         Debug.Log("Total play game : "+ _data[0]);
@@ -16,5 +15,6 @@ public class PlayCounter : MonoBehaviour
         int count = int.Parse(_data[0]);
         count++;
         DatabaseManager.Instance.SaveData(path,count.ToString());
+        
     }
 }

@@ -19,6 +19,7 @@ public class QuestionPackManager : MonoBehaviour
     {
         get
         {
+            if(instance  == null ) instance = FindObjectOfType<QuestionPackManager>();
             return instance;
         }
     }
@@ -56,10 +57,7 @@ public class QuestionPackManager : MonoBehaviour
 
     private void Start()
     {
-        
         DontDestroyOnLoad(gameObject);
-        LoadPacks();
-        
     }
     public void LoadPacks()
     {
@@ -70,7 +68,7 @@ public class QuestionPackManager : MonoBehaviour
 
     private void GetData(string[] _result)
     {
-
+        listPack.Clear();
         foreach (string json in _result)
         {
             QuestionPack question = JsonConvert.DeserializeObject<QuestionPack>(json);
@@ -91,7 +89,6 @@ public class QuestionPackManager : MonoBehaviour
         if (_packIndex < 0 || _packIndex >= listPack.Count) return;
         selectedPackIndex = _packIndex;
         Debug.Log("Selected pack : " + selectedPackIndex);
-        Debug.Log(listPack[selectedPackIndex]);
     }
 
 

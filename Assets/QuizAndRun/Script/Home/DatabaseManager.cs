@@ -25,21 +25,34 @@ public class DatabaseManager : MonoBehaviour
     }
     private DatabaseManager() { }
     DatabaseReference reference;
+    FirebaseApp app;
 
-
-    void Awake()
+    void Start()
     {
-
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
-        {
-            FirebaseApp app = FirebaseApp.DefaultInstance;
-            reference = FirebaseDatabase.DefaultInstance.RootReference;
-
-        });
-
+        if (DatabaseManager.instance != this) Destroy(this);
+        DontDestroyOnLoad(this.gameObject);
+        CreateReference();
     }
 
+    private void CreateReference()
+    {
+        reference = FirebaseDatabase.DefaultInstance.RootReference;
+        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+        {
+            var dependencyStatus = task.Result;
+            if (dependencyStatus == Firebase.DependencyStatus.Available)
+            {
+                app = Firebase.FirebaseApp.DefaultInstance;
+            }
+            else
+            {
+                UnityEngine.Debug.LogError(System.String.Format(
+                  "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
 
+            }
+        });
+        
+    }
     public void GetData(string _path, Action<string> callback)
     {
         if (reference == null) reference = FirebaseDatabase.DefaultInstance.RootReference;
@@ -62,41 +75,42 @@ public class DatabaseManager : MonoBehaviour
 
     public void GetJsonDatas(string _path, Action<string[]> callback)
     {
-        reference = FirebaseDatabase.DefaultInstance.RootReference;
-
+        if (reference == null) CreateReference();
         reference.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted)
             {
-                Debug.LogError("Error getting data from Firebase: " + task.Exception);
-                return;
+                // Handle the error...
             }
-
-            DataSnapshot snapshot = task.Result;
-
-            List<string> valuesList = new List<string>();
-            if(snapshot.ChildrenCount > 0)
+            else if (task.IsCompleted)
             {
-                foreach (var childSnapshot in snapshot.Children)
+                DataSnapshot snapshot = task.Result;
+                List<string> valuesList = new List<string>();
+                if (snapshot.ChildrenCount > 0)
                 {
-                    string value = childSnapshot.Value.ToString();
-                    valuesList.Add(value);
+                    foreach (var childSnapshot in snapshot.Children)
+                    {
+                        string value = childSnapshot.Value.ToString();
+                        valuesList.Add(value);
+                    }
                 }
-            }
-            else
-            {
-                valuesList.Add(snapshot.Value.ToString());
-            }
+                else
+                {
+                    valuesList.Add(snapshot.Value.ToString());
+                }
 
 
-            string[] result = valuesList.ToArray();
+                string[] result = valuesList.ToArray();
 
-            foreach (string value in result)
-            {
-                Debug.Log(value);
+                foreach (string value in result)
+                {
+                    Debug.Log(value);
+                }
+                callback(result);
             }
-            callback(result);
         });
+
+
     }
 
     public async void SaveJsonData(string _path, string _json)

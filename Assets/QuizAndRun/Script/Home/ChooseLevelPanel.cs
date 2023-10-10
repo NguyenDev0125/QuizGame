@@ -7,14 +7,11 @@ using UnityEngine.UIElements;
 public class ChooseLevelPanel : MonoBehaviour
 {
     [SerializeField] GameObject levelItemPrb;
-    [SerializeField] ScrollRect scrollView;
-    [SerializeField] UnityEngine.UI.Button startGameBtn;
     [SerializeField] RectTransform viewPort;
     private List<GameObject> levelItems;
     public void DisplayLevels(QuestionPack[] _pack)
     {
-        Debug.Log("Display " +  _pack.Length);
-        Clear();
+        ClearUIList();
         levelItems = new List<GameObject>();
         if (_pack.Length < 0) return;
         Vector2 viewPortSize = viewPort.GetComponent<RectTransform>().sizeDelta;
@@ -34,7 +31,7 @@ public class ChooseLevelPanel : MonoBehaviour
         }
     }
 
-    private void Clear()
+    private void ClearUIList()
     {
         if (levelItems == null) return;
        foreach(GameObject obj in  levelItems)

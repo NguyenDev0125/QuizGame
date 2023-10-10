@@ -20,7 +20,12 @@ public class HomeManager : MonoBehaviour
 
     private void Awake()
     {
-        if (OnListPackLoaded) OnListPackLoaded.OnEventRaised += DisplayLevel;
+        if (OnListPackLoaded)
+        {
+            OnListPackLoaded.OnEventRaised -= DisplayLevel;
+            OnListPackLoaded.OnEventRaised += DisplayLevel;
+        }
+
 
         openChooseLvPanelBtn.onClick.AddListener(OpenOptionPanel);
         openLvCreaterPanelBtn.onClick.AddListener(OpenUploadLvPanel);
@@ -30,7 +35,11 @@ public class HomeManager : MonoBehaviour
         closeLvCreaterPanelBtn.onClick.AddListener(OpenUploadLvPanel);
         closeStoryPanelBtn.onClick.AddListener(OpenStoryPanel);
     }
-
+    
+    private void Start()
+    {
+        QuestionPackManager.Instance.LoadPacks();
+    }
     private void OpenOptionPanel()
     {
         chooseLvPanel.gameObject.SetActive(!chooseLvPanel.isActiveAndEnabled);
@@ -47,7 +56,6 @@ public class HomeManager : MonoBehaviour
     }
     private void DisplayLevel()
     {
-        
         chooseLvPanel.DisplayLevels(QuestionPackManager.Instance.ListPack.ToArray());
     }
 
