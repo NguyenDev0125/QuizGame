@@ -190,7 +190,7 @@ namespace Proyecto26
 #if UNITY_2018_1_OR_NEWER
         private CertificateHandler _certificateHandler;
         /// <summary>
-        /// Holds a reference to a CertificateHandler object, which manages certificate validation for this UnityWebRequest.
+        /// Holds a dbRef to a CertificateHandler object, which manages certificate validation for this UnityWebRequest.
         /// </summary>
         public CertificateHandler CertificateHandler
         {
@@ -201,7 +201,7 @@ namespace Proyecto26
 
         private UploadHandler _uploadHandler;
         /// <summary>
-        /// Holds a reference to the UploadHandler object which manages body data to be uploaded to the remote server.
+        /// Holds a dbRef to the UploadHandler object which manages body data to be uploaded to the remote server.
         /// </summary>
         public UploadHandler UploadHandler
         {
@@ -211,7 +211,7 @@ namespace Proyecto26
 
         private DownloadHandler _downloadHandler;
         /// <summary>
-        /// Holds a reference to a DownloadHandler object, which manages body data received from the remote server by this UnityWebRequest.
+        /// Holds a dbRef to a DownloadHandler object, which manages body data received from the remote server by this UnityWebRequest.
         /// </summary>
         public DownloadHandler DownloadHandler 
         { 

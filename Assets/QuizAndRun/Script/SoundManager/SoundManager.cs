@@ -6,6 +6,7 @@ public class SoundManager : MonoBehaviour
 {
     private static SoundManager instance;
     [SerializeField] Sound[] listSound;
+    [SerializeField] SettingManager settingManager;
 
     public static SoundManager Instance 
     { 
@@ -21,6 +22,8 @@ public class SoundManager : MonoBehaviour
     }
     private void Awake()
     {
+        if (SoundManager.instance != null && SoundManager.instance != this) Destroy(this);
+        DontDestroyOnLoad(this);
         foreach(Sound sound in listSound) 
         { 
             AudioSource audioSource = this.gameObject.AddComponent<AudioSource>();
@@ -31,11 +34,11 @@ public class SoundManager : MonoBehaviour
 
             if (sound.Type == SoundType.Sfx)
             {
-                audioSource.volume = sound.Volume * GameManager.Instance.SettingManager.SoundVolume;
+                audioSource.volume = sound.Volume * settingManager.SoundVolume;
             }
             else
             {
-                audioSource.volume = sound.Volume * GameManager.Instance.SettingManager.MusicVolume;
+                audioSource.volume = sound.Volume * settingManager.MusicVolume;
             }
 
             sound.audioSource = audioSource;

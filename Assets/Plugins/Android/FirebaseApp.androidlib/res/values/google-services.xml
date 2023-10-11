@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/firebase_database_url,@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id,@string/default_web_client_id">
+  <string name="firebase_database_url" translatable="false">https://quizgame-3e7a1-default-rtdb.firebaseio.com</string>
+  <string name="gcm_defaultSenderId" translatable="false">544086144477</string>
+  <string name="google_storage_bucket" translatable="false">quizgame-3e7a1.appspot.com</string>
+  <string name="project_id" translatable="false">quizgame-3e7a1</string>
+  <string name="google_api_key" translatable="false">AIzaSyCjSbHCADWraoVaIGt2CuyybqXjoDrwPJM</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCjSbHCADWraoVaIGt2CuyybqXjoDrwPJM</string>
+  <string name="google_app_id" translatable="false">1:544086144477:android:29c4e89e7477e1315ab234</string>
+  <string name="default_web_client_id" translatable="false">544086144477-vlffc0oalhmcka6a1ruavbto3o7m9hh3.apps.googleusercontent.com</string>
+</resources>

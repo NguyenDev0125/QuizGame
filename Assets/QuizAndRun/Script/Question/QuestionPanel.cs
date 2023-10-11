@@ -1,24 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System;
-using System.Collections.Generic;
 using System.Collections;
 using DG.Tweening;
+using System;
 
 public class QuestionPanel : MonoBehaviour
 {
-    [Header("UI reference")]
+    [Header("UI dbRef")]
+    [SerializeField] QuestionController questionController;
     [SerializeField] private Text questionTitleTxt;
     [SerializeField] private Text questionTxt;
     [SerializeField] private AnswerButton[] listAnswersBtns;
     [SerializeField] private CoolDownPanel coolDownPanel;
 
-    [Header("Event raise")]
-
-    [Header("Data")]
-    [SerializeField] private QuestionData questionData;
-    [SerializeField] private AnswerButton answerButtonUIPb;
-
+    private Question questionData;
 
     [Header("Animation")]
     [SerializeField] CanvasGroup canvas;
@@ -32,13 +27,10 @@ public class QuestionPanel : MonoBehaviour
     [SerializeField] Ease buttonEase;
 
 
-
-
-
-    public void ShowQuestion(string _questionTitle, QuestionData _questionData)
+    public void DisplayQuestion(int questionIndex, Question _questionData )
     {
         questionData = _questionData;
-        questionTitleTxt.text = _questionTitle;
+        questionTitleTxt.text = "# "+questionIndex;
         
         coolDownPanel.StartCoolDown(_questionData.LimitedTime);
         questionTxt.text = questionData.questionContent;
@@ -46,10 +38,10 @@ public class QuestionPanel : MonoBehaviour
         {
             if(questionData != null && questionData.listAnswer[i] != null)
             {
-                string ABCD = Alphabet.GetCharByIndex(i).ToString();
+
                 string answer = questionData.listAnswer[i];
                 bool isTrueAnswer = questionData.trueAnswerIndex == i;
-                listAnswersBtns[i].SetAnswerButton(ABCD, answer, isTrueAnswer);
+                listAnswersBtns[i].SetAnswerButton(answer, answer == questionData.listAnswer[questionData.trueAnswerIndex]);
             }
         }
         RefreshPanel();
@@ -80,7 +72,6 @@ public class QuestionPanel : MonoBehaviour
         {
             rect.transform.localScale = Vector3.zero;
         }
-
         canvas.alpha = 0f;
         questionPanel.transform.localPosition = new Vector3(0, -1416, 0);
         questionPanel.DOAnchorPos(Vector3.zero, fadeInDuration);
@@ -102,11 +93,13 @@ public class QuestionPanel : MonoBehaviour
             yield return new WaitForSeconds(delayTimeBetweenTwoBtn);
         }
         canvas.DOFade(0f,fadeOutDuation).SetEase(easeInEase);
-
+        yield return new WaitForSeconds(fadeOutDuation);
+        questionController.OnResultDisplayed();
+        
         yield return null;
     }    
 
-    public void ShowResult()
+    public void DisplayResult()
     {
         StartCoroutine(IE_ShowResult());
     }
@@ -125,6 +118,7 @@ public class QuestionPanel : MonoBehaviour
         }
         yield return new WaitForSeconds(3f);
         StartCoroutine(IE_FadeOut());
+        
     }
 
     public void OnHoverEnter()

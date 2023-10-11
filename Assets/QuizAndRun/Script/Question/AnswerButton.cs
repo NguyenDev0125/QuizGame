@@ -7,13 +7,11 @@ using System.Collections;
 public class AnswerButton : MonoBehaviour
 {
     [Header("UI references")]
-    [SerializeField] private Text ABCDText;
     [SerializeField] private Text answerText;
     [SerializeField] private Sprite normalBg, trueBg, falseBg;
     [SerializeField] private Button answerBtn;
+    [SerializeField] QuestionController questionController;
 
-    [Header("Event listener")]
-    [SerializeField] BoolEventChanel OnAnswerButtonClick;
     private bool isTrueAnswer = false;
     private bool isButtonClicked = false;
 
@@ -22,31 +20,17 @@ public class AnswerButton : MonoBehaviour
         answerBtn.onClick.RemoveAllListeners();
         answerBtn.onClick.AddListener(() =>
         {
-            OnAnswerButtonClick.Raise(isTrueAnswer);
             isButtonClicked = true;
             SoundManager.Instance.Play("MouseClick");
-            
+            questionController.OnQuestionAnswer(isTrueAnswer);
         });
     }
-    
-    public void OnHoverEnter()
-    {
-        GetComponent<RectTransform>().DOScale(1.05f, 0.1f).SetEase(Ease.OutBounce);
-        if (isButtonClicked) return;
-        SoundManager.Instance.Play("MouseHover");
-    }
 
-    public void OnHoverExit()
-    {
-        if(isButtonClicked) return;
-        GetComponent<RectTransform>().DOScale(1f, 0.1f).SetEase(Ease.OutBounce);
-    }
 
-    public void SetAnswerButton(string _ABCD, string _answer , bool _isTrueAnswer)
+    public void SetAnswerButton(string _answer , bool isTrue)
     {
-        ABCDText.text = _ABCD + ".";
         answerText.text = _answer;
-        isTrueAnswer = _isTrueAnswer;
+        isTrueAnswer = isTrue;
     }
 
     public void ResetButton()
@@ -86,12 +70,25 @@ public class AnswerButton : MonoBehaviour
             gameObject.SetActive(isButtonClicked);
             answerBtn.image.sprite = falseBg;
         }
+        
+    }
+
+
+    public void OnHoverEnter()
+    {
+        GetComponent<RectTransform>().DOScale(1.05f, 0.1f).SetEase(Ease.OutBounce);
+        if (isButtonClicked) return;
+        SoundManager.Instance.Play("MouseHover");
+    }
+
+    public void OnHoverExit()
+    {
+        if (isButtonClicked) return;
+        GetComponent<RectTransform>().DOScale(1f, 0.1f).SetEase(Ease.OutBounce);
     }
 
 
 
-    
 
-  
 
 }

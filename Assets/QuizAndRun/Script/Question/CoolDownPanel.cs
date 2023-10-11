@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class CoolDownPanel : MonoBehaviour
 {
+    [SerializeField] QuestionController questionController;
     [SerializeField] Slider timeSlide;
-    [SerializeField] VoidEventChanel OnTimeOut;
     private float timer = 0;
     private bool isCooldown = false;
     private bool isTimeout = false;
@@ -32,8 +32,8 @@ public class CoolDownPanel : MonoBehaviour
             {
                 if(!isTimeout)
                 {
-                    OnTimeOut.Raise();
                     isTimeout = true;
+                    questionController.OnTimerOut();
                 }
                 
             }

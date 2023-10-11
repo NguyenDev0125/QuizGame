@@ -1,13 +1,9 @@
-﻿using Firebase;
+using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
-using Google.MiniJSON;
-using Newtonsoft.Json;
+using Firebase.Storage;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -24,27 +20,46 @@ public class DatabaseManager : MonoBehaviour
         }
     }
     private DatabaseManager() { }
-    DatabaseReference reference;
+    DatabaseReference dbRef;
+    StorageReference storageReference;
+    FirebaseApp app;
 
-
-    void Awake()
+    void Start()
     {
-
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
-        {
-            FirebaseApp app = FirebaseApp.DefaultInstance;
-            reference = FirebaseDatabase.DefaultInstance.RootReference;
-
-        });
-
+        if (DatabaseManager.instance != null && DatabaseManager.instance != this) Destroy(this);
+        DontDestroyOnLoad(this.gameObject);
+        CreateReference();
     }
 
+    private void CreateReference()
+    {
+        dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+        FirebaseStorage storage = FirebaseStorage.DefaultInstance;
+        storageReference = storage.GetReferenceFromUrl("gs://quizgame-3e7a1.appspot.com");
+        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+        {
+            var dependencyStatus = task.Result;
+            if (dependencyStatus == Firebase.DependencyStatus.Available)
+            {
+                app = Firebase.FirebaseApp.DefaultInstance;
+            }
+            else
+            {
+                UnityEngine.Debug.LogError(System.String.Format(
+                  "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
 
+            }
+        });
+
+
+
+
+    }
     public void GetData(string _path, Action<string> callback)
     {
-        if (reference == null) reference = FirebaseDatabase.DefaultInstance.RootReference;
+        if (dbRef == null) dbRef = FirebaseDatabase.DefaultInstance.RootReference;
 
-        reference.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
+        dbRef.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted)
             {
@@ -62,57 +77,59 @@ public class DatabaseManager : MonoBehaviour
 
     public void GetJsonDatas(string _path, Action<string[]> callback)
     {
-        reference = FirebaseDatabase.DefaultInstance.RootReference;
-
-        reference.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
+        if (dbRef == null) CreateReference();
+        dbRef.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted)
             {
-                Debug.LogError("Error getting data from Firebase: " + task.Exception);
-                return;
+                Debug.Log("Error");
             }
-
-            DataSnapshot snapshot = task.Result;
-
-            List<string> valuesList = new List<string>();
-            if(snapshot.ChildrenCount > 0)
+            else if (task.IsCompleted)
             {
-                foreach (var childSnapshot in snapshot.Children)
+                DataSnapshot snapshot = task.Result;
+                List<string> valuesList = new List<string>();
+                if (snapshot.ChildrenCount > 0)
                 {
-                    string value = childSnapshot.Value.ToString();
-                    valuesList.Add(value);
+                    foreach (var childSnapshot in snapshot.Children)
+                    {
+                        string value = childSnapshot.Value.ToString();
+                        valuesList.Add(value);
+                    }
                 }
-            }
-            else
-            {
-                valuesList.Add(snapshot.Value.ToString());
-            }
+                else
+                {
+                    valuesList.Add(snapshot.Value.ToString());
+                }
 
 
-            string[] result = valuesList.ToArray();
+                string[] result = valuesList.ToArray();
 
-            foreach (string value in result)
-            {
-                Debug.Log(value);
+                foreach (string value in result)
+                {
+                    Debug.Log(value);
+                }
+                callback(result);
             }
-            callback(result);
         });
+
+
     }
 
     public async void SaveJsonData(string _path, string _json)
     {
-        if (reference == null) Debug.Log("Firebase is nit Initialized");
+        if (dbRef == null) Debug.Log("Firebase is not Initialized");
         DateTime date = DateTime.Now;
         string realTime = date.ToString("mm_hh_dd_yyyy");
         _path += "NguyenDev_QuizGame_Pack" + realTime;
         Debug.Log(_path);
-        await reference.Child(_path).SetValueAsync(_json);
+        await dbRef.Child(_path).SetValueAsync(_json);
 
     }
 
     public async void SaveData(string _path, string _data)
     {
-        if (reference == null) Debug.Log("Firebase is nit Initialized");
-        await reference.Child(_path).SetValueAsync(_data);
+        if (dbRef == null) Debug.Log("Firebase is nit Initialized");
+        await dbRef.Child(_path).SetValueAsync(_data);
     }
+
 }

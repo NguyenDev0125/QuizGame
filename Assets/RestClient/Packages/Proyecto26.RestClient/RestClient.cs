@@ -44,7 +44,7 @@ namespace Proyecto26
         }
 
         /// <summary>
-        /// Clear default query string params.
+        /// ClearUIList default query string params.
         /// </summary>
         public static void ClearDefaultParams()
         {
@@ -69,7 +69,7 @@ namespace Proyecto26
         }
 
         /// <summary>
-        /// Clear default headers.
+        /// ClearUIList default headers.
         /// </summary>
         public static void ClearDefaultHeaders()
         {
