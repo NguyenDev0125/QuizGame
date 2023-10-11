@@ -1,13 +1,9 @@
-﻿using Firebase;
+using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
-using Google.MiniJSON;
-using Newtonsoft.Json;
+using Firebase.Storage;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -24,19 +20,22 @@ public class DatabaseManager : MonoBehaviour
         }
     }
     private DatabaseManager() { }
-    DatabaseReference reference;
+    DatabaseReference dbRef;
+    StorageReference storageReference;
     FirebaseApp app;
 
     void Start()
     {
-        if (DatabaseManager.instance != this) Destroy(this);
+        if (DatabaseManager.instance != null && DatabaseManager.instance != this) Destroy(this);
         DontDestroyOnLoad(this.gameObject);
         CreateReference();
     }
 
     private void CreateReference()
     {
-        reference = FirebaseDatabase.DefaultInstance.RootReference;
+        dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+        FirebaseStorage storage = FirebaseStorage.DefaultInstance;
+        storageReference = storage.GetReferenceFromUrl("gs://quizgame-3e7a1.appspot.com");
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
             var dependencyStatus = task.Result;
@@ -51,13 +50,16 @@ public class DatabaseManager : MonoBehaviour
 
             }
         });
-        
+
+
+
+
     }
     public void GetData(string _path, Action<string> callback)
     {
-        if (reference == null) reference = FirebaseDatabase.DefaultInstance.RootReference;
+        if (dbRef == null) dbRef = FirebaseDatabase.DefaultInstance.RootReference;
 
-        reference.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
+        dbRef.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted)
             {
@@ -75,12 +77,12 @@ public class DatabaseManager : MonoBehaviour
 
     public void GetJsonDatas(string _path, Action<string[]> callback)
     {
-        if (reference == null) CreateReference();
-        reference.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
+        if (dbRef == null) CreateReference();
+        dbRef.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted)
             {
-                // Handle the error...
+                Debug.Log("Error");
             }
             else if (task.IsCompleted)
             {
@@ -115,18 +117,19 @@ public class DatabaseManager : MonoBehaviour
 
     public async void SaveJsonData(string _path, string _json)
     {
-        if (reference == null) Debug.Log("Firebase is nit Initialized");
+        if (dbRef == null) Debug.Log("Firebase is not Initialized");
         DateTime date = DateTime.Now;
         string realTime = date.ToString("mm_hh_dd_yyyy");
         _path += "NguyenDev_QuizGame_Pack" + realTime;
         Debug.Log(_path);
-        await reference.Child(_path).SetValueAsync(_json);
+        await dbRef.Child(_path).SetValueAsync(_json);
 
     }
 
     public async void SaveData(string _path, string _data)
     {
-        if (reference == null) Debug.Log("Firebase is nit Initialized");
-        await reference.Child(_path).SetValueAsync(_data);
+        if (dbRef == null) Debug.Log("Firebase is nit Initialized");
+        await dbRef.Child(_path).SetValueAsync(_data);
     }
+
 }

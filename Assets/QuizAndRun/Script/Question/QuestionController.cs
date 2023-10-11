@@ -1,56 +1,80 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class QuestionController : MonoBehaviour
 {
-    [SerializeField] private string questionTitle;
-    [SerializeField] private QuestionPack questionPack;
+    [SerializeField] Pack questionPack;
+    [SerializeField] QuestionPanel questionPanel;
+    [SerializeField] UIController uiController;
     
-    private List<QuestionData> questionsNotAnswered;
-    
-    private int currentQuestionIndex = 1;
-    public bool IsAnsweredAllQuestion
+    private List<Question> questionsNotAnswered;
+    private float startTime;
+    private int totalTrueAnswer = 0;
+    private int questionAnsweredCounter = 0;
+    private int totalAnswer = 0;
+    private void Awake()
     {
-        get => questionsNotAnswered.Count == 0;
+        questionsNotAnswered = questionPack.listQuestion;
     }
-    public void Init()
+    private void Start()
     {
-        LoadQuestions();
+        LoadPack();
     }
-
-    private void LoadQuestions()
+    private void LoadPack()
     {
-        Debug.Log(QuestionPackManager.Instance.SelectedPack.packName);
-        questionsNotAnswered = QuestionPackManager.Instance.SelectedPack.listQuestion.ToList();
-        Debug.Log($"QuestionManager.LoadQuestion() : {questionsNotAnswered.Count} question loaded");
+        totalAnswer = questionsNotAnswered.Count;
+        startTime = Time.time;
+        DisplayRandomQuestion();
     }
-
-    private QuestionData GetRandomQuestion()
+    private Question GetRandomQuestion()
     {
         if(questionsNotAnswered.Count == 0) return null;
         int rand = UnityEngine.Random.Range(0,questionsNotAnswered.Count);
-        QuestionData result = questionsNotAnswered[rand];
+        Question result = questionsNotAnswered[rand];
         questionsNotAnswered.Remove(result);
         return result;
     }
 
     public void DisplayRandomQuestion()
     {
-        QuestionData question = GetRandomQuestion();
+        Question question = GetRandomQuestion();
         if (question != null)
         {
-            string title = $"Question {currentQuestionIndex++}";
-            GameManager.Instance.QuestionPanel.ShowQuestion(title, question);
+            questionPanel.DisplayQuestion(questionAnsweredCounter+1, question);
         }
-        
     }
 
+    public void OnQuestionAnswer(bool isTrue)
+    {
 
+    }
 
+    public void OnTimerOut()
+    {
+        questionAnsweredCounter++;
+        DisplayRandomQuestion();
+    }
 
+    public void OnResultDisplayed()
+    {
+        DisplayRandomQuestion();
+        if (questionsNotAnswered.Count == 0)
+        {
+            uiController.DisplayResult();
+        }
+    }
 
+    public int GetTotalAnswer()
+    { return totalAnswer; }
 
+    public int GetTotalCorrectAnswered()
+    {
+        return totalTrueAnswer;
+    }
+
+    public int GetTotalPlayTime()
+    {
+        return (int)(Time.time - startTime);
+    }
 }

@@ -5,10 +5,6 @@ public class SettingManager : MonoBehaviour
     [SerializeField] float defaultSoundVolume;
     [SerializeField] float defaultMusicVolume;
 
-    [Header("Raise event")] 
-    [SerializeField] FloatEventChanel OnSoundSlideChanged;
-    [SerializeField] FloatEventChanel OnMusicSlideChanged;
-
     private const string SOUND_VOLUME = "soundVolume";
     private const string MUSIC_VOLUME = "musicVolume";
     
@@ -17,8 +13,7 @@ public class SettingManager : MonoBehaviour
 
     private void OnEnable()
     {
-        if(OnSoundSlideChanged) OnSoundSlideChanged.RaisedEvent += SoundSlideChanged;
-        if(OnMusicSlideChanged) OnMusicSlideChanged.RaisedEvent += MusicSlideChanged;
+
     }
     private void SoundSlideChanged(float _volume)
     {
