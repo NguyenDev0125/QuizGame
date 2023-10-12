@@ -1,7 +1,6 @@
 using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
-using Firebase.Storage;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ public class DatabaseManager : MonoBehaviour
     }
     private DatabaseManager() { }
     DatabaseReference dbRef;
-    StorageReference storageReference;
+
     FirebaseApp app;
 
     void Start()
@@ -34,8 +33,7 @@ public class DatabaseManager : MonoBehaviour
     private void CreateReference()
     {
         dbRef = FirebaseDatabase.DefaultInstance.RootReference;
-        FirebaseStorage storage = FirebaseStorage.DefaultInstance;
-        storageReference = storage.GetReferenceFromUrl("gs://quizgame-3e7a1.appspot.com");
+
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
             var dependencyStatus = task.Result;
@@ -47,7 +45,6 @@ public class DatabaseManager : MonoBehaviour
             {
                 UnityEngine.Debug.LogError(System.String.Format(
                   "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
-
             }
         });
 
