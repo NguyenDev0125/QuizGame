@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,19 +21,44 @@ public class PackCreaterUI : MonoBehaviour
     [SerializeField] Button uploadBtn;
     [SerializeField] QuestionItemUI itemPb;
     [SerializeField] Transform root;
-    
-    
+    [SerializeField] Button pickImageButton;
+    [SerializeField] RawImage image;
+
 
     private PackCreater creater;
+    NativeFilePicker.Permission permission;
     private void Awake()
     {
         addBtn.onClick.AddListener(AddQuestion);
         uploadBtn.onClick.AddListener(UploadPack);
+        pickImageButton.onClick.AddListener(PickImage);
         creater = new PackCreater();
         creater.CreateNewPack();
     }
 
+    private void PickImage()
+    {
+        Debug.Log("Pick file");
+        NativeFilePicker.Permission permisstion = NativeFilePicker.CheckPermission(false);
+        if(permission == NativeFilePicker.Permission.Denied)
+        {
+            permission = NativeFilePicker.RequestPermission(false);
+        }
+        if(permission == NativeFilePicker.Permission.Granted)
+        {
+            NativeFilePicker.PickFile((path) =>
+            {
+                if (path != null)
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    Texture2D text = new Texture2D(image.texture.width, image.texture.height);
+                    text.LoadImage(bytes, false);
+                    image.texture = text;
+                }
+            }, "image/*");
+        }
 
+    }
     private void Refresh()
     {
         titleTxt.text = "";
@@ -47,8 +73,8 @@ public class PackCreaterUI : MonoBehaviour
 
     private void AddQuestion()
     {
-        
-        if(CheckQuestionIsCorrect())
+
+        if (CheckQuestionIsCorrect())
         {
             int timeLimit = int.Parse(timeLimitTxt.text);
             int trueIndex = 0;
@@ -56,10 +82,10 @@ public class PackCreaterUI : MonoBehaviour
             if (trueAnswer.text.ToLower() == "c") trueIndex = 2;
             if (trueAnswer.text.ToLower() == "d") trueIndex = 3;
 
-            creater.AddQuestion(questionTxt.text , aTxt.text , bTxt.text , cTxt.text , dTxt.text , timeLimit , trueIndex );
+            creater.AddQuestion(questionTxt.text, aTxt.text, bTxt.text, cTxt.text, dTxt.text, timeLimit, trueIndex);
             QuestionItemUI item = Instantiate(itemPb);
             item.SetText(questionTxt.text);
-            
+
             item.transform.SetParent(root);
             item.transform.localScale = Vector3.one;
 
@@ -72,9 +98,9 @@ public class PackCreaterUI : MonoBehaviour
 
     private void UploadPack()
     {
-        if(CheckPackIsCorrect())
+        if (CheckPackIsCorrect())
         {
-            creater.UploadPack(titleTxt.text , desTxt.text);
+            creater.UploadPack(titleTxt.text, desTxt.text);
         }
         else
         {
@@ -89,11 +115,11 @@ public class PackCreaterUI : MonoBehaviour
         if (bTxt.text == "") return false;
         if (cTxt.text == "") return false;
         if (dTxt.text == "") return false;
-        if(timeLimitTxt.text == "") return false;
+        if (timeLimitTxt.text == "") return false;
         int o = 0;
-        if(int.TryParse(timeLimitTxt.text ,out o) == false || o == 0) return false;
+        if (int.TryParse(timeLimitTxt.text, out o) == false || o == 0) return false;
         string t = trueAnswer.text.ToLower();
-        if (t.Contains("a") || t.Contains("b") || t.Contains("c") || t.Contains("d") ) return true;
+        if (t.Contains("a") || t.Contains("b") || t.Contains("c") || t.Contains("d")) return true;
         return false;
     }
 
@@ -101,7 +127,7 @@ public class PackCreaterUI : MonoBehaviour
     {
         if (titleTxt.text == "") return false;
         if (desTxt.text == "") return false;
-        if(creater.ListQuestion.Count == 0) return false;
+        if (creater.ListQuestion.Count == 0) return false;
         return true;
     }
 }
