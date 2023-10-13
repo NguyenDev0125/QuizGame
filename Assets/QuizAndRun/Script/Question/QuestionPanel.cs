@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using DG.Tweening;
 using System;
+using UnityEngine.Networking;
 
 public class QuestionPanel : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class QuestionPanel : MonoBehaviour
     [SerializeField] private Text questionTitleTxt;
     [SerializeField] private Text questionTxt;
     [SerializeField] private AnswerButton[] listAnswersBtns;
+    [SerializeField] Image questionImg;
+    
     [SerializeField] private CoolDownPanel coolDownPanel;
 
     private Question questionData;
@@ -31,18 +34,20 @@ public class QuestionPanel : MonoBehaviour
     {
         questionData = _questionData;
         questionTitleTxt.text = "# "+questionIndex;
-        
         coolDownPanel.StartCoolDown(_questionData.LimitedTime);
         questionTxt.text = questionData.questionContent;
         for(int i = 0; i <  listAnswersBtns.Length; i++)
         {
             if(questionData != null && questionData.listAnswer[i] != null)
             {
-
                 string answer = questionData.listAnswer[i];
-                bool isTrueAnswer = questionData.trueAnswerIndex == i;
                 listAnswersBtns[i].SetAnswerButton(answer, answer == questionData.listAnswer[questionData.trueAnswerIndex]);
             }
+        }
+        if(questionData.imageUrl != "")
+        {
+            questionImg.gameObject.SetActive(false);
+            StartCoroutine(IE_LoadImage(_questionData.imageUrl));
         }
         RefreshPanel();
         this.gameObject.SetActive(true);
@@ -50,12 +55,24 @@ public class QuestionPanel : MonoBehaviour
 
     }
 
+    private IEnumerator IE_LoadImage(string url)
+    {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+        yield return www.SendWebRequest();
+        Texture2D text = ((DownloadHandlerTexture)www.downloadHandler).texture;
+        questionImg.preserveAspect = true;
+        Sprite spr = Sprite.Create(text, new Rect(0, 0, text.width, text.height), Vector2.zero);
+        questionImg.sprite = spr;
+        questionImg.preserveAspect = true;
+        questionImg.gameObject.SetActive(true);
+    }
     private void RefreshPanel()
     {
         foreach(AnswerButton answer in listAnswersBtns)
         {
             answer.ResetButton();
         }
+        questionImg.gameObject.SetActive(false);
     }
 
     public void LockAllButton()
@@ -111,12 +128,12 @@ public class QuestionPanel : MonoBehaviour
         {
             answerButton.LockButton();
         }    
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.6f);
         foreach (AnswerButton answer in listAnswersBtns)
         {
             answer.ShowResult();
         }
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
         StartCoroutine(IE_FadeOut());
         
     }

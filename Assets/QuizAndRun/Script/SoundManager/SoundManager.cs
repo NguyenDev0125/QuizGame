@@ -42,9 +42,15 @@ public class SoundManager : MonoBehaviour
             }
 
             sound.audioSource = audioSource;
+
         }
     }
-
+    private void Start()
+    {
+        SetSoundVolum(PlayerPrefs.GetFloat("soundVolume", 1f));
+        SetMusicVolume(PlayerPrefs.GetFloat("musicVolume", 1f));
+        PlayMusic("Background", 5f);
+    }
     public void SetSoundVolum(float _volume)
     {
         foreach (Sound sound in listSound)
@@ -63,13 +69,10 @@ public class SoundManager : MonoBehaviour
     {
         foreach (Sound sound in listSound)
         {
-            
             if (sound.Type == SoundType.Music)
             {
                 sound.audioSource.volume = sound.Volume * _volume;
             }
-            
-            
         }
     }
     public void Play(string _name)

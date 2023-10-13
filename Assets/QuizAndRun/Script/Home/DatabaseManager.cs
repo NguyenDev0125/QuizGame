@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Firebase.Storage;
+using UnityEngine.Networking;
 
 public class DatabaseManager : MonoBehaviour
 {
@@ -20,6 +22,7 @@ public class DatabaseManager : MonoBehaviour
     }
     private DatabaseManager() { }
     DatabaseReference dbRef;
+    StorageReference stRef;
 
     FirebaseApp app;
 
@@ -32,8 +35,8 @@ public class DatabaseManager : MonoBehaviour
 
     private void CreateReference()
     {
+        stRef = FirebaseStorage.DefaultInstance.GetReferenceFromUrl("gs://quizgame-3e7a1.appspot.com/");
         dbRef = FirebaseDatabase.DefaultInstance.RootReference;
-
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
             var dependencyStatus = task.Result;
@@ -128,5 +131,34 @@ public class DatabaseManager : MonoBehaviour
         if (dbRef == null) Debug.Log("Firebase is nit Initialized");
         await dbRef.Child(_path).SetValueAsync(_data);
     }
+
+    public async void SaveImage(string localPath, string remotePath , Action<string > callBack)
+    {
+        StorageReference imageRef = stRef.Child(remotePath);
+        var t = imageRef.PutFileAsync(localPath);
+        await t;
+        var t2 = imageRef.GetDownloadUrlAsync();
+        await t2;
+        callBack(t2.Result.ToString());
+
+    }
+
+    public async void GetTextureFormImageUrl(string remotePath ,int w , int h, Action<Texture2D> callBack)
+    {
+        StorageReference imageRef = stRef.Child(remotePath);
+        Debug.Log("Dowload " + imageRef);
+        int maxSize = 1 * 1024 * 1024 * 10;
+        Task<byte[]> dowloadTask = imageRef.GetBytesAsync(maxSize);
+        await dowloadTask;
+
+        if(!dowloadTask.IsFaulted && !dowloadTask.IsCanceled)
+        {
+            Texture2D newText = new Texture2D(w,h);
+            newText.LoadImage(dowloadTask.Result);
+            callBack(newText);
+
+        }
+    }
+
 
 }
