@@ -6,7 +6,6 @@ public class SoundManager : MonoBehaviour
 {
     private static SoundManager instance;
     [SerializeField] Sound[] listSound;
-    [SerializeField] SettingManager settingManager;
 
     public static SoundManager Instance 
     { 
@@ -31,16 +30,6 @@ public class SoundManager : MonoBehaviour
             audioSource.pitch = sound.Pitch;
             audioSource.clip = sound.AudioClip;
             audioSource.playOnAwake = false;
-
-            if (sound.Type == SoundType.Sfx)
-            {
-                audioSource.volume = sound.Volume * settingManager.SoundVolume;
-            }
-            else
-            {
-                audioSource.volume = sound.Volume * settingManager.MusicVolume;
-            }
-
             sound.audioSource = audioSource;
 
         }
@@ -55,13 +44,10 @@ public class SoundManager : MonoBehaviour
     {
         foreach (Sound sound in listSound)
         {
-            
-
             if (sound.Type == SoundType.Sfx)
             {
                 sound.audioSource.volume = sound.Volume * _volume;
             }
-
         }
     }
 

@@ -64,7 +64,7 @@ public class UIController : MonoBehaviour
         toggleSettingBtn.gameObject.SetActive(false);
         settingPanel.gameObject.SetActive(false);
         StartCoroutine(IE_ShowScore(totalTrue, totalAnswer));
-        ScoreTxt.text = "Your score : " + score;
+        ScoreTxt.text = "Time complete : " + (int)time + " seconds";
     }
 
     private IEnumerator IE_ShowScore(int totcalTrueAnswer , int totalAnswer)

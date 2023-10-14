@@ -13,10 +13,13 @@ public class SettingManager : MonoBehaviour
     
     public float SoundVolume { get => PlayerPrefs.GetFloat(SOUND_VOLUME, defaultSoundVolume); }
     public float MusicVolume { get => PlayerPrefs.GetFloat(MUSIC_VOLUME, defaultMusicVolume); }
-    private void Awake()
+    private void Start()
     {
         soundVolume.onValueChanged.AddListener(SoundSlideChanged);
         musicVolume.onValueChanged.AddListener(MusicSlideChanged);
+
+        soundVolume.value = SoundVolume;
+        musicVolume.value = MusicVolume;
     }
 
     private void SoundSlideChanged(float _volume)

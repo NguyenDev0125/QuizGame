@@ -40,15 +40,8 @@ public class QuestionController : MonoBehaviour
 
         if (questionAnsweredCounter >= totalAnswer)
         {
-            int score = 0;
-            if (totalTrueAnswer < totalAnswer)
-            {
-                score = (totalTrueAnswer % totalAnswer) * 100 + Random.Range(3, 9);
-            }
-            else
-            {
-                score = 100 + Random.Range(7, 29);
-            }
+            int score = totalTrueAnswer * 4 + Random.Range(5, 13);
+            ScoreManager.Instance.AddScore(score);
             uiController.DisplayResult(totalTrueAnswer, totalAnswer, score, GetTotalPlayTime());
         }
         else

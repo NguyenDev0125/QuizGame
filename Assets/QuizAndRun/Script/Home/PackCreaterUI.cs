@@ -115,6 +115,7 @@ public class PackCreaterUI : MonoBehaviour
                 DatabaseManager.Instance.SaveImage(localImagePath, remotePath + pack.packId + Random.Range(11,99999) + ".png", path =>
                 {
                     Debug.Log(path);
+                    statusTxt.text = "Image uploaded.";
                     Question newQuesstion = new Question();
                     newQuesstion.questionContent = questionTxt.text;
                     newQuesstion.trueAnswerIndex = trueIndex;
@@ -127,7 +128,7 @@ public class PackCreaterUI : MonoBehaviour
                     item.transform.SetParent(root);
                     item.transform.localScale = Vector3.one;
                     uploadBtn.gameObject.SetActive(true);
-                    statusTxt.text = "Status : Image uploaded";
+
                     Refresh();
 
                 });
@@ -146,7 +147,7 @@ public class PackCreaterUI : MonoBehaviour
                 item.transform.SetParent(root);
                 item.transform.localScale = Vector3.one;
                 uploadBtn.gameObject.SetActive(true);
-                statusTxt.text = "Status : Image uploaded";
+                statusTxt.text = "Status : Image uploaded.";
                 Refresh();
             }
 
