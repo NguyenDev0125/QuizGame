@@ -1,8 +1,10 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 
 public class ChatPanel : MonoBehaviour
@@ -12,7 +14,6 @@ public class ChatPanel : MonoBehaviour
     [SerializeField] MessengeUI messPrb;
     [SerializeField] ScrollRect scrollRect;
     private string chatPath = "Chats/ChatChanel";
-    private string chatCounterPath = "Chats/Counter";
 
     Queue<GameObject> queueObj;
     private void Start()
@@ -20,12 +21,12 @@ public class ChatPanel : MonoBehaviour
         sendBtn.onClick.AddListener(SendText);
         DatabaseManager.Instance.RegistListenerOnChillAdded(chatPath, GetNewMessenge);
         queueObj = new Queue<GameObject>();
-        LoadAllChat();
+        //LoadAllChat();
     }
 #if UNITY_EDITOR
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
             SendText();
         }
@@ -33,8 +34,9 @@ public class ChatPanel : MonoBehaviour
 #endif
     private void LoadAllChat()
     {
-        DatabaseManager.Instance.GetJsonDatasSorted(chatPath, (listJson) =>
+        DatabaseManager.Instance.GetJsonDatasSortedAccending(chatPath, (listJson) =>
         {
+            Debug.Log(listJson.Length);
             foreach (string s in listJson)
             {
                 MessengeData data = JsonConvert.DeserializeObject<MessengeData>(s);
@@ -42,11 +44,11 @@ public class ChatPanel : MonoBehaviour
             }
         });
     }
-    private void AddNewMessUI(string username , string mess)
+    private void AddNewMessUI(string username, string mess)
     {
-        MessengeUI m = Instantiate(messPrb , scrollRect.content);
+        MessengeUI m = Instantiate(messPrb, scrollRect.content);
         m.SetText(username, mess);
-        if(scrollRect.verticalNormalizedPosition == 0)
+        if (scrollRect.verticalNormalizedPosition == 0)
         {
             scrollRect.verticalNormalizedPosition = 0f;
         }
@@ -66,20 +68,14 @@ public class ChatPanel : MonoBehaviour
     private void SendText()
     {
         if (inputTxt.text.Length <= 0) return;
-        Debug.Log(inputTxt.text);
-        DatabaseManager.Instance.GetData(chatCounterPath, (s) =>
+        string messenge = inputTxt.text;
+        inputTxt.text = "";
+        inputTxt.Select();
+        MessengeData mess = new MessengeData(PlayerPrefs.GetString("username"), messenge);
+        string savePath = chatPath + "/" + (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        string json = JsonConvert.SerializeObject(mess);
+        DatabaseManager.Instance.SaveJsonDataCallBack(savePath, json, () =>
         {
-
-            int count = int.Parse(s);
-            count++;
-            MessengeData mess = new MessengeData(PlayerPrefs.GetString("username"), inputTxt.text);
-            string savePath = chatPath + "/" + count;
-            string json = JsonConvert.SerializeObject(mess);
-            DatabaseManager.Instance.SaveJsonData(savePath, json , () =>
-            {
-                inputTxt.text = "";
-                DatabaseManager.Instance.SaveData(chatCounterPath, count.ToString());
-            });
         });
     }
 

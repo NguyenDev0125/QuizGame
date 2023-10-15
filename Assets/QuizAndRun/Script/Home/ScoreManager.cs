@@ -19,17 +19,19 @@ public class ScoreManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
     private string SCORE_KEY = "score";
-    public int GetScore()
-    {
-        return PlayerPrefs.GetInt(SCORE_KEY, 0);
-    }
+
 
     public void AddScore(int score)
     {
-        int sc = GetScore() + score;
         string remoteSavePath = "Accounts/" + PlayerPrefs.GetString("id") + "/score";
-        DatabaseManager.Instance.SaveData(remoteSavePath, sc.ToString());
-        PlayerPrefs.SetInt(SCORE_KEY, sc);
+        DatabaseManager.Instance.GetData(remoteSavePath, (s) =>
+        {
+            int sc = int.Parse(s) + score;
+            DatabaseManager.Instance.SaveData(remoteSavePath, sc.ToString());
+            PlayerPrefs.SetInt(SCORE_KEY, sc);
+        });
+
+
     }
 
 }

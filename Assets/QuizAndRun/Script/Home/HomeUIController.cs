@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,16 +12,19 @@ public class HomeUIController : MonoBehaviour
     [SerializeField] GameObject storyPanel;
     [SerializeField] GameObject menuPanel;
     [SerializeField] GameObject chatPanel;
+    [SerializeField] GameObject leaderBoard;
 
     [SerializeField] Button openChooseLvPanelBtn;
     [SerializeField] Button openLvCreaterPanelBtn;
     [SerializeField] Button openStoryPanelBtn;
     [SerializeField] Button openChatPanelBtn;
+    [SerializeField] Button openLeaderBoardBtn;
 
     [SerializeField] Button closeChooseLvPanelBtn;
     [SerializeField] Button closeLvCreaterPanelBtn;
     [SerializeField] Button closeStoryPanelBtn;
     [SerializeField] Button colseChatPanelBtn;
+    [SerializeField] Button colseLeaderBoardBtn;
 
     private void Awake()
     {
@@ -29,12 +33,21 @@ public class HomeUIController : MonoBehaviour
         openLvCreaterPanelBtn.onClick.AddListener(OpenUploadLvPanel);
         openStoryPanelBtn.onClick.AddListener(OpenStoryPanel);
         openChatPanelBtn.onClick.AddListener(OpenChatPanel);
+        openLeaderBoardBtn.onClick.AddListener(OpenLeaderBoard);
 
         closeChooseLvPanelBtn.onClick.AddListener(OpenOptionPanel);
         closeLvCreaterPanelBtn.onClick.AddListener(OpenUploadLvPanel);
         closeStoryPanelBtn.onClick.AddListener(OpenStoryPanel);
         colseChatPanelBtn.onClick.AddListener(OpenChatPanel);
+        colseLeaderBoardBtn.onClick.AddListener(OpenLeaderBoard);
     }
+
+    private void OpenLeaderBoard()
+    {
+        menuPanel.SetActive(!menuPanel.activeInHierarchy);
+        leaderBoard.SetActive(!menuPanel.activeInHierarchy);
+    }
+
     public void OpenMenuPanel(bool fullOption)
     {
         if(!fullOption)

@@ -46,7 +46,7 @@ public class PackCreater
             pack.packName = _packName;
             pack.packDes = _packDes;
             string json = JsonConvert.SerializeObject(pack);
-            DatabaseManager.Instance.SaveJsonData(path, json);
+            DatabaseManager.Instance.SavePack(path, json);
 
         }
     }

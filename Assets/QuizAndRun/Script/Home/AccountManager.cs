@@ -39,7 +39,7 @@ public class AccountManager : MonoBehaviour
     private void Login(string username, string password)
     {
         statusTxt.text = "Wait for login....";
-        DatabaseManager.Instance.GetDictionaryData(AccountPath, (users) =>
+        DatabaseManager.Instance.GetAllUserAccount(AccountPath, (users) =>
         {
             foreach (var user in users)
             {
@@ -71,7 +71,7 @@ public class AccountManager : MonoBehaviour
             statusTxt.text = "Bro ?:)";
         }
         statusTxt.text = "Wait for register....";
-        DatabaseManager.Instance.GetDictionaryData(AccountPath, (users) =>
+        DatabaseManager.Instance.GetAllUserAccount(AccountPath, (users) =>
         {
             foreach (var user in users)
             {

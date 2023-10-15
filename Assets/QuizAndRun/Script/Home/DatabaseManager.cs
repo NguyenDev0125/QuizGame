@@ -55,7 +55,7 @@ public class DatabaseManager : MonoBehaviour
 
     }
 
-    public async void GetDictionaryData(string _path , Action<List<Dictionary<string,string>>> callBack)
+    public async void GetAllUserAccount(string _path , Action<List<Dictionary<string,string>>> callBack)
     {
         
         if (dbRef == null) dbRef = FirebaseDatabase.DefaultInstance.RootReference;
@@ -134,7 +134,7 @@ public class DatabaseManager : MonoBehaviour
             }
         });
     }
-    public void GetJsonDatasSorted(string _path, Action<string[]> callback)
+    public void GetJsonDatasSortedAccending(string _path, Action<string[]> callback, int count = 20)
     {
 
         dbRef.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
@@ -149,8 +149,9 @@ public class DatabaseManager : MonoBehaviour
                 if (snapshot.ChildrenCount > 0)
                 {
                     var list = from child in snapshot.Children
-                               orderby int.Parse(child.Key)
+                               orderby long.Parse(child.Key)
                                select child.Value.ToString();
+                    list.Take(count);
                     callback(list.ToArray());
                 }
 
@@ -158,22 +159,44 @@ public class DatabaseManager : MonoBehaviour
         });
     }
 
-    public async void SaveJsonData(string _path, string _json)
+    public void GetJsonDatasSortedDeccending(string _path, Action<string[]> callback, int count = 20)
+    {
+
+        dbRef.Child(_path).GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.Log("Error");
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                if (snapshot.ChildrenCount > 0)
+                {
+                    var list = from child in snapshot.Children
+                               orderby long.Parse(child.Key)
+                               select child.Value.ToString();
+                    list.Take(count);
+                    callback(list.ToArray());
+                }
+
+            }
+        });
+    }
+
+    public async void SavePack(string _path, string _json)
     {
         DateTime date = DateTime.Now;
         string realTime = date.ToString("mm_hh_dd_yyyy");
         _path += "NguyenDev_QuizGame_Pack_" + realTime;
         await dbRef.Child(_path).SetValueAsync(_json);
     }
-    public void SaveJsonData(string _path, string _json, Action callBack)
+    public void SaveJsonDataCallBack(string _path, string _json, Action callBack)
     {
         if(dbRef == null) dbRef = FirebaseDatabase.DefaultInstance.RootReference;
         dbRef.Child(_path).SetValueAsync(_json).ContinueWith(task =>
         {
-            if(task.IsCompleted)
-            {
-                callBack();
-            }
+            callBack.Invoke();
         });
 
     }
