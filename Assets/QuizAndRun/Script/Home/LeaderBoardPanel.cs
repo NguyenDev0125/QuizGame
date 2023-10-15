@@ -14,13 +14,14 @@ public class LeaderBoardPanel : MonoBehaviour
     private void OnEnable()
     {
         if (items == null) items = new List<LeaderBoardItemUI>();
+
         GetLeaderBoard();
     }
     private void GetLeaderBoard()
     {
         DatabaseManager.Instance.GetAllUserAccount(LeaderBoardPath, (listJson) =>
         {
-            Debug.Log(listJson.Count);
+            ClearleaderBoar();
             var users = from json in listJson
                         orderby json["score"] descending
                         select json;
@@ -35,9 +36,13 @@ public class LeaderBoardPanel : MonoBehaviour
 
     private void ClearleaderBoar()
     {
-        foreach (var item in items)
+        int count = items.Count;
+        for (int i = 0; i < count; i++)
         {
+            LeaderBoardItemUI item = items[0];
+            items.Remove(item);
             Destroy(item.gameObject);
+            
         }
     }
 
