@@ -13,8 +13,9 @@ public class ChatPanel : MonoBehaviour
     [SerializeField] TMP_InputField inputTxt;
     [SerializeField] MessengeUI messPrb;
     [SerializeField] ScrollRect scrollRect;
+    [SerializeField] AccountManager accountManager;
     private string chatPath = "Chats/ChatChanel";
-
+    private string myMessenge = "";
     Queue<GameObject> queueObj;
     private void Start()
     {
@@ -63,15 +64,21 @@ public class ChatPanel : MonoBehaviour
         Debug.Log(obj.ToString());
         MessengeData data = JsonConvert.DeserializeObject<MessengeData>(obj.ToString());
         AddNewMessUI(data.username, data.messenge);
+        if(data.username != accountManager.GetCurrentUser().username)
+        {
+            SoundManager.Instance.Play("NewMessenge");
+        }
+
     }
 
     private void SendText()
     {
         if (inputTxt.text.Length <= 0) return;
         string messenge = inputTxt.text;
+        myMessenge = messenge;
         inputTxt.text = "";
         inputTxt.Select();
-        MessengeData mess = new MessengeData(PlayerPrefs.GetString("username"), messenge);
+        MessengeData mess = new MessengeData(accountManager.GetCurrentUser().username, messenge);
         string savePath = chatPath + "/" + (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         string json = JsonConvert.SerializeObject(mess);
         DatabaseManager.Instance.SaveJsonDataCallBack(savePath, json, () =>

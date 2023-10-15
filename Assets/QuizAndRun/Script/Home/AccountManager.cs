@@ -24,6 +24,8 @@ public class AccountManager : MonoBehaviour
     private const string SCORE_KEY = "score";
     private const string ISADMIN_KEY = "isadmin";
 
+    private User currentUser = null;
+
     private const string AccountPath = "Accounts/";
 
     private void Start()
@@ -57,6 +59,7 @@ public class AccountManager : MonoBehaviour
                     lvTxt.text = "Score : " + user[SCORE_KEY];
                     loginPanel.SetActive(false);
                     homeUIController.OpenMenuPanel(user[ISADMIN_KEY] == "1");
+                    currentUser = new User(user[ID_KEY],user[USERNAME_KEY], user[PASSWORD_KEY]);
                     return;
                 }
             }
@@ -94,7 +97,10 @@ public class AccountManager : MonoBehaviour
         });
     }
 
-
+    public User GetCurrentUser()
+    {
+        return currentUser;
+    }
 
     private bool CheckValidInput()
     {
@@ -121,5 +127,4 @@ public class AccountManager : MonoBehaviour
     {
         PlayerPrefs.SetString(key, value);
     }
-
 }

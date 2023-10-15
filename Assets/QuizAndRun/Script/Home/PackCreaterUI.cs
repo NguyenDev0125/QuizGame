@@ -32,8 +32,7 @@ public class PackCreaterUI : MonoBehaviour
     private Pack pack;
     NativeFilePicker.Permission permission;
     private string remotePath = "QuizImages/";
-    private string localImagePath = null;
-    private bool hasImage = false;
+    private string localImagePath = "";
     private void Awake()
     {
         addBtn.onClick.AddListener(AddQuestion);
@@ -58,19 +57,21 @@ public class PackCreaterUI : MonoBehaviour
         }
         if (permission == NativeFilePicker.Permission.Granted)
         {
+            statusTxt.text = "Status : Picking image";
             NativeFilePicker.PickFile((path) =>
             {
                 if (path != null)
                 {
+                    localImagePath = path;
                     byte[] bytes = File.ReadAllBytes(path);
                     Texture2D text = new Texture2D(image.sprite.texture.width, image.sprite.texture.height);
                     text.LoadImage(bytes, false);
-                    Sprite spr = Sprite.Create(text, new Rect(0, 0, text.width, text.height),Vector2.zero);
+                    Sprite spr = Sprite.Create(text, new Rect(0, 0, text.width, text.height), Vector2.zero);
                     image.sprite = spr;
                     pickFileTxt.gameObject.SetActive(false);
                     localImagePath = path;
-                    hasImage = true;
                     image.gameObject.SetActive(true);
+
                 }
             }, "image/*");
         }
@@ -78,7 +79,7 @@ public class PackCreaterUI : MonoBehaviour
     }
     private void Refresh()
     {
-        hasImage = false;
+        localImagePath = "";
         questionTxt.text = "";
         timeLimitTxt.text = "";
         trueAnswer.text = "";
@@ -89,78 +90,70 @@ public class PackCreaterUI : MonoBehaviour
         dTxt.text = "";
         image.sprite = sprNormal;
         pickFileTxt.gameObject.SetActive(true);
-
     }
 
     private void AddQuestion()
     {
-
-        if (CheckQuestionIsCorrect())
+        if (!CheckQuestionIsCorrect())
         {
-            int timeLimit = int.Parse(timeLimitTxt.text);
-            int trueIndex = 0;
-            if (trueAnswer.text.ToLower() == "b") trueIndex = 1;
-            else if (trueAnswer.text.ToLower() == "c")
+            statusTxt.text = "Status : Invalid input";
+        }
+        else
+        {
+            if(localImagePath != "")
             {
-                trueIndex = 2;
-            }
-            else if (trueAnswer.text.ToLower() == "d") 
-            {
-                trueIndex = 3;
-            }
-            statusTxt.text = "Status : Start upload image ...";
-            if (hasImage)
-            {
-                hasImage = false;
-                DatabaseManager.Instance.SaveImage(localImagePath, remotePath + pack.packId + Random.Range(11,99999) + ".png", path =>
+                byte[] bytes = File.ReadAllBytes(localImagePath);
+                statusTxt.text = "Status : Image uploading....";
+                DatabaseManager.Instance.SaveImage(bytes, remotePath +"/"+ Random.Range(11111, 99999), (url) =>
                 {
-                    Debug.Log(path);
-                    statusTxt.text = "Image uploaded.";
-                    Question newQuesstion = new Question();
-                    newQuesstion.questionContent = questionTxt.text;
-                    newQuesstion.trueAnswerIndex = trueIndex;
-                    newQuesstion.imageUrl = path;
-                    newQuesstion.listAnswer = new string[] { aTxt.text, bTxt.text, cTxt.text, dTxt.text };
-                    newQuesstion.LimitedTime = timeLimit;
-                    listQuestionAdded.Add(newQuesstion);
+                    statusTxt.text = "Status : Image uploaded";
+                    Question question = CreateQuestion();
+                    question.imageUrl = url;
+                    uploadBtn.gameObject.SetActive(true);
+                    statusTxt.text = "Status : Image uploaded";
+                    listQuestionAdded.Add(question);
+
                     QuestionItemUI item = Instantiate(itemPb);
                     item.SetText(questionTxt.text);
                     item.transform.SetParent(root);
                     item.transform.localScale = Vector3.one;
-                    uploadBtn.gameObject.SetActive(true);
 
                     Refresh();
-
-                });
+                }); ;
             }
             else
             {
-                Question newQuesstion = new Question();
-                newQuesstion.questionContent = questionTxt.text;
-                newQuesstion.trueAnswerIndex = trueIndex;
-                newQuesstion.imageUrl = "";
-                newQuesstion.listAnswer = new string[] { aTxt.text, bTxt.text, cTxt.text, dTxt.text };
-                newQuesstion.LimitedTime = timeLimit;
-                listQuestionAdded.Add(newQuesstion);
+                Question question = CreateQuestion();
+                uploadBtn.gameObject.SetActive(true);
+                listQuestionAdded.Add(question);
+                statusTxt.text = "Status : Question added";
+
                 QuestionItemUI item = Instantiate(itemPb);
                 item.SetText(questionTxt.text);
                 item.transform.SetParent(root);
                 item.transform.localScale = Vector3.one;
-                uploadBtn.gameObject.SetActive(true);
-                statusTxt.text = "Status : Image uploaded.";
                 Refresh();
             }
 
         }
-        else
-        {
-            statusTxt.text = "Status : Invalid input";
-        }
     }
 
+    private Question CreateQuestion()
+    {
+        int timeLimit = int.Parse(timeLimitTxt.text);
+        int trueIndex = 0;
+        if (trueAnswer.text.ToLower() == "b") trueIndex = 1; else if (trueAnswer.text.ToLower() == "c") trueIndex = 2; else if (trueAnswer.text.ToLower() == "d") trueIndex = 3;
+
+        Question newQuesstion = new Question();
+        newQuesstion.questionContent = questionTxt.text;
+        newQuesstion.trueAnswerIndex = trueIndex;
+        newQuesstion.imageUrl = "";
+        newQuesstion.listAnswer = new string[] { aTxt.text, bTxt.text, cTxt.text, dTxt.text };
+        newQuesstion.LimitedTime = timeLimit;
+        return newQuesstion;
+    }
     private void UploadPack()
     {
-
         foreach (var item in listQuestionAdded)
         {
             creater.AddQuestion(item);
@@ -174,7 +167,6 @@ public class PackCreaterUI : MonoBehaviour
 
     private bool CheckQuestionIsCorrect()
     {
-        if (questionTxt.text == "") return false;
         if (aTxt.text == "") return false;
         if (bTxt.text == "") return false;
         if (cTxt.text == "") return false;

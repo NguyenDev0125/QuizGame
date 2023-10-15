@@ -222,7 +222,7 @@ public class DatabaseManager : MonoBehaviour
         .ContinueWithOnMainThread((Task<StorageMetadata> task) => {
         if (task.IsFaulted || task.IsCanceled)
         {
-            callBack("t1"+ task.Exception.Message);
+            callBack("t1"+ task.Exception);
         }
         else
         {
@@ -240,6 +240,34 @@ public class DatabaseManager : MonoBehaviour
                 });
         }
     });
+    }
+
+    public void SaveImage(byte[] img, string remotePath, Action<string> callBack)
+    {
+
+        StorageReference imageRef = stRef.Child(remotePath);
+        imageRef.PutBytesAsync(img)
+        .ContinueWithOnMainThread((Task<StorageMetadata> task) => {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                callBack("t1" + task.Exception);
+            }
+            else
+            {
+                imageRef.GetDownloadUrlAsync().ContinueWithOnMainThread(getUrlTask =>
+                {
+                    if (getUrlTask.IsFaulted || getUrlTask.IsCanceled)
+                    {
+                        callBack("t2" + getUrlTask.Exception.Message);
+                    }
+                    else
+                    {
+                        callBack(getUrlTask.Result.ToString());
+                    }
+
+                });
+            }
+        });
     }
 
     public async void GetTextureFormImageUrl(string remotePath ,int w , int h, Action<Texture2D> callBack)

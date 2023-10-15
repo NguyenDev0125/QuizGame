@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 77d0e32876ef009468d4804ffab670f2
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - SFU Sydney
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: b37b7b7a1d6c6a341ad31a8591a3cabb, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
