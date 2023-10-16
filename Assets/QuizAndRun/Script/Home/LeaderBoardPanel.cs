@@ -23,13 +23,15 @@ public class LeaderBoardPanel : MonoBehaviour
         {
             ClearleaderBoar();
             var users = from json in listJson
-                        orderby json["score"] descending
+                        orderby int.Parse(json["score"]) descending
                         select json;
             for(int i = 0; i < users.Count(); i++)
             { 
+
                 LeaderBoardItemUI clone = Instantiate(itemPrb,rect.content);
                 clone.SetItem(users.ElementAt(i)["username"] , users.ElementAt(i)["score"], i);
                 items.Add(clone);
+                Debug.Log(users.ElementAt(i)["score"]);
             }
         });
     }

@@ -55,31 +55,34 @@ public class DatabaseManager : MonoBehaviour
 
     }
 
-    public async void GetAllUserAccount(string _path , Action<List<Dictionary<string,string>>> callBack)
+    public  void GetAllUserAccount(string _path , Action<List<Dictionary<string,string>>> callBack)
     {
         
         if (dbRef == null) dbRef = FirebaseDatabase.DefaultInstance.RootReference;
         DatabaseReference userRef = dbRef.Child(_path);
-        var task = userRef.GetValueAsync();
-        await task;
-        if(!task.IsFaulted && !task.IsCanceled) 
+        userRef.GetValueAsync().ContinueWithOnMainThread(task =>
         {
-            List<Dictionary<string, string>> results = new List<Dictionary<string, string>>();
-            DataSnapshot snapshot = task.Result;
-            foreach(var snap in  snapshot.Children)
+            if (!task.IsFaulted && !task.IsCanceled)
             {
-                string key = snap.Key;
-                Dictionary<string, string> result = new Dictionary<string, string>();
-                result.Add("id", key);
-                result.Add("username", snap.Child("username").Value.ToString());
-                result.Add("password", snap.Child("password").Value.ToString());
-                result.Add("email", snap.Child("email").Value.ToString());
-                result.Add("score", snap.Child("score").Value.ToString());
-                result.Add("isadmin", snap.Child("isadmin").Value.ToString());
-                results.Add(result);
+                List<Dictionary<string, string>> results = new List<Dictionary<string, string>>();
+                DataSnapshot snapshot = task.Result;
+                foreach (var snap in snapshot.Children)
+                {
+                    string key = snap.Key;
+                    Dictionary<string, string> result = new Dictionary<string, string>();
+                    result.Add("id", key);
+                    result.Add("username", snap.Child("username").Value.ToString());
+                    result.Add("password", snap.Child("password").Value.ToString());
+                    result.Add("email", snap.Child("email").Value.ToString());
+                    result.Add("score", snap.Child("score").Value.ToString());
+                    result.Add("isadmin", snap.Child("isadmin").Value.ToString());
+                    results.Add(result);
+                }
+                callBack(results);
             }
-            callBack(results);
-        }
+        });
+ 
+
     }
     public void GetData(string _path, Action<string> callback)
     {
