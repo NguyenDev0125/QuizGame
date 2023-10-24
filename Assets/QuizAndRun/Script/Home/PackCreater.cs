@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,37 +15,39 @@ public class PackCreater
             return pack.listQuestion;
         }
     }
-    public void CreateNewPack()
+    public Pack CreateNewPack()
     {
         pack = new Pack();
+        pack.packId = RandomId();
+        return pack;
     }
-    public void AddQuestion(string _ques , string _a , string _b, string _c , string _d , int _timeLimit , int _trueAnswerIndex)
+
+    private string RandomId()
+    {
+        char[] result = new char[8];
+        for(int i = 0; i < result.Length; i++)
+        {
+            result[i] = (char)UnityEngine.Random.Range(48, 58);
+        }
+        return new string(result);
+    }
+    public void AddQuestion(Question question)
     {
         if (pack == null) pack = new Pack();
         if (pack.listQuestion == null) pack.listQuestion = new List<Question>();
-        
-        Question data = new Question();
-        data.questionContent = _ques;
-        data.listAnswer[0] = _a;
-        data.listAnswer[1] = _b;
-        data.listAnswer[2] = _c;
-        data.listAnswer[3] = _d;
-        data.LimitedTime = _timeLimit;
-        data.trueAnswerIndex = _trueAnswerIndex;
-        
-        pack.listQuestion.Add(data);
+        pack.listQuestion.Add(question);
         
     }
 
-    public void UploadPack(string _packName , string _packDes)
+    public void UploadPack(string _packName , string _packDes , string imagePath)
     {
         if(pack != null && pack.listQuestion != null)
         {
             pack.packName = _packName;
             pack.packDes = _packDes;
             string json = JsonConvert.SerializeObject(pack);
-            DatabaseManager.Instance.SaveJsonData(path, json);
-            
+            DatabaseManager.Instance.SavePack(path, json);
+
         }
     }
 }

@@ -15,6 +15,5 @@ public class PackUI : MonoBehaviour
         title.text = _title;
         description.text = _des;
         button.onClick.AddListener(() => _onClick(id));
-        Debug.Log($"{_id} + {_title} +  {_des} +");
     }
 }

@@ -8,5 +8,6 @@ public class Question
     public string[] listAnswer = new string[4];
     public int trueAnswerIndex;
     public int LimitedTime;
+    public string imageUrl = "";
 }
 
