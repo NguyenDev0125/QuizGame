@@ -16,6 +16,7 @@ public class CoolDownPanel : MonoBehaviour
         timeSlide.maxValue = _maxValue;
         timeSlide.value = _maxValue;
         isCooldown = true;
+        isTimeout = false;
         Show();
     }
 
